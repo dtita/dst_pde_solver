@@ -1,5 +1,5 @@
-#ifndef CLOSED_FORM_HPP
-#define CLOSED_FORM_HPP
+#ifndef SOLVER_HPP
+#define SOLVER_HPP
 
 #include <vector>
 

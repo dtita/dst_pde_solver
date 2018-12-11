@@ -1,4 +1,4 @@
-#include "closed_form.hpp"
+#include "solver.hpp"
 #include <cmath>
 #include <limits>
 #include <algorithm>
