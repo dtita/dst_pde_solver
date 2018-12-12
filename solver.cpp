@@ -13,6 +13,7 @@ namespace dauphine
 		: m_dt(dt), m_dx(dx), m_maturity(maturity),m_spot_boundaries(boundaries)
 	{
 	}
+
 	mesh::~mesh()
 	{
 	}
@@ -35,6 +36,15 @@ namespace dauphine
 	double payoff::function_operator(std::vector<double> arguments) {
 		return m_f(arguments);
 	}
+	payoff::~payoff() {
+	}
+	double rate::function_operator(std::vector<double> arguments) {
+		return m_f(arguments);
+	}
+	rate::~rate() {
+	}
 
+	price_vector::price_vector() {
+	}
 }
 

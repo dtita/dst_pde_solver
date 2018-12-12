@@ -21,25 +21,51 @@ namespace dauphine
 		std::vector<double> m_spot_boundaries;
 	};
 
+
+	//essayer de voir si on peut faire une famille avec les classes payoff, vol, rates, boundaries
 	class payoff {
 	public:
 		payoff(double(*f)(std::vector<double>));
 		double function_operator(std::vector<double> arguments);
+		~payoff();
 	private:
 		double (*m_f)(std::vector<double>);
 	};
 
-
-	class boundary_conditions {
-	};
 	class rate {
+	public:
+		rate(double(*f)(std::vector<double>));
+		double function_operator(std::vector<double> arguments);
+		~rate();
+	private:
+		double(*m_f)(std::vector<double>);
 	};
+
 	class volatility {
+	public:
+		volatility(double(*f)(std::vector<double>));
+		double function_operator(std::vector<double> arguments);
+		~volatility();
+	private:
+		double(*m_f)(std::vector<double>);
 	};
-	class theta {
+
+	class boundaries {
+	public:
+		boundaries(double(*f)(std::vector<double>));
+		std::vector<double> function_operator(std::vector<double> arguments);
+		~boundaries();
+	private:
+		std::vector<double>(*m_f)(std::vector<double>);
 	};
+
+
 	class price_vector {
+	public: 
+		price_vector();
+	private:
 	};
+
 }
 
 #endif
