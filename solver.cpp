@@ -5,8 +5,12 @@
 
 namespace dauphine
 {
-	mesh::mesh(double time_space, double space_space, double maturity, double spot_max)
-		: m_time_space(time_space), m_space_space(space_space), m_maturity(maturity),m_spot_max(spot_max)
+	//mesh::mesh()
+	//	: m_dt(1), m_dx(1), m_maturity(1), m_spot_boundaries([1,1])
+	//{
+	//}
+	mesh::mesh(double dt, double dx, double maturity,std::vector<double> boundaries)
+		: m_dt(dt), m_dx(dx), m_maturity(maturity),m_spot_boundaries(boundaries)
 	{
 	}
 	mesh::~mesh()
@@ -14,6 +18,15 @@ namespace dauphine
 	}
 	double mesh::get_mesh_maturity() const{
 		return m_maturity;
+	}
+	double mesh::get_mesh_dt() const {
+		return m_dt;
+	}
+	double mesh::get_mesh_dx() const {
+		return m_dx;
+	}
+	std::vector<double> mesh::get_mesh_spot_boundaries() const {
+		return m_spot_boundaries;
 	}
 }
 
