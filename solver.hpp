@@ -22,6 +22,7 @@ namespace dauphine
 	};
 
 	class payoff {
+		payoff();
 	};
 	class boundary_conditions {
 	};
