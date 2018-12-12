@@ -22,8 +22,14 @@ namespace dauphine
 	};
 
 	class payoff {
-		payoff();
+	public:
+		payoff(double(*f)(std::vector<double>));
+		double function_operator(std::vector<double> arguments);
+	private:
+		double (*m_f)(std::vector<double>);
 	};
+
+
 	class boundary_conditions {
 	};
 	class rate {

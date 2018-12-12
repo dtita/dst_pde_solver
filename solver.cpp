@@ -28,5 +28,13 @@ namespace dauphine
 	std::vector<double> mesh::get_mesh_spot_boundaries() const {
 		return m_spot_boundaries;
 	}
+	payoff::payoff(double(*f)(std::vector<double>))
+		: m_f(f)
+	{
+	}
+	double payoff::function_operator(std::vector<double> arguments) {
+		return m_f(arguments);
+	}
+
 }
 
