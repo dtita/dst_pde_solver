@@ -50,6 +50,10 @@ namespace dauphine
 		mesh_boundaries[1] = 15;
 		mesh m(1,1,1,100,0.5,mesh_boundaries);
 		std::cout << payoff.function_operator(arguments) << std::endl;
+		std::vector<double> test = m.spot_vector();
+		for (std::size_t i = 0; i < 2; i++) {
+			std::cout << test[i] << std::endl;
+		}
 		std::cout << diag_coeff(m, rate,arguments) << std::endl;
 
 	}
