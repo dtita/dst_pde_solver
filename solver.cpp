@@ -36,11 +36,11 @@ namespace dauphine
 		return m_spot_boundaries;
 	}
 	std::vector<double> mesh::spot_vector() {
-		int size = floor((m_spot_boundaries[0] - m_spot_boundaries[1]) / m_dx);
+		int size = floor((m_spot_boundaries[0] - m_spot_boundaries[1]) / m_dx)+1;
 		std::vector<double> result(size);
 		for (std::size_t i = 0; i < result.size(); ++i)
 		{
-			result[i] = m_spot_boundaries[1]+m_dx;
+			result[i] = m_spot_boundaries[1]+i*m_dx;
 		}
 		return result;
 	}

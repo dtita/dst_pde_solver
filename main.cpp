@@ -46,15 +46,16 @@ namespace dauphine
 		initial_function down_boundaries(boundaries_down);
 
 		std::vector<double> mesh_boundaries(2);
-		mesh_boundaries[0] = 0;
-		mesh_boundaries[1] = 15;
+		mesh_boundaries[0] = 150;
+		mesh_boundaries[1] = 50;
 		mesh m(1,1,1,100,0.5,mesh_boundaries);
 		std::cout << payoff.function_operator(arguments) << std::endl;
 		std::vector<double> test = m.spot_vector();
-		for (std::size_t i = 0; i < 2; i++) {
-			std::cout << test[i] << std::endl;
+		for (std::size_t i = 0; i < test.size(); i++) {
+			std::cout << test[i] << ' ';
 		}
-		std::cout << diag_coeff(m, rate,arguments) << std::endl;
+		payoff.function_operator(arguments)
+		std::cout << test[3] << std::endl;
 
 	}
 }
