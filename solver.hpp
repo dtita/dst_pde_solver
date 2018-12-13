@@ -8,16 +8,20 @@ namespace dauphine
 	class mesh {
 	public:
 		//mesh();
-		mesh(double dt, double dx,double maturity, std::vector<double> spot_boundaries);
+		mesh(double dt, double dx,double maturity, double spot, double theta, std::vector<double> spot_boundaries);
 		double get_mesh_dt() const;
 		double get_mesh_maturity() const;
 		double get_mesh_dx() const;
+		double get_mesh_spot() const;
+		double get_mesh_theta() const;
 		std::vector<double> get_mesh_spot_boundaries() const;
 		~mesh();
 	private:
 		double m_dt;
 		double m_dx;
 		double m_maturity;
+		double m_spot;
+		double m_theta;
 		std::vector<double> m_spot_boundaries;
 	};
 
@@ -31,6 +35,17 @@ namespace dauphine
 	private:
 		double(*m_f)(std::vector<double>);
 	};
+	double diag_coeff(mesh m, initial_function rate, std::vector<double> arguments);
+
+
+	//class matrix_elements {
+	//public:
+	//	matrix_elements(initial_function rate);
+	//};
+	//class diag_coeff : public matrix_elements{
+	//public:
+	//	double diag_function();
+	//};
 
 
 	class price_vector {

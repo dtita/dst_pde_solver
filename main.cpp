@@ -6,35 +6,39 @@
 #include <limits>
 
 namespace dauphine
-{
-	//modify this function to modify the payoff
+{	
+	//Initial functions to be changed according to the user's needs
+	//modify this function to modify the payoff, arguments=[spot,maturity,mesh_boundaries_up,mesh_boundaries_down]
 	double payoff_function(std::vector<double> arguments) {
-		return std::max(arguments[0]-arguments[1],0.);
+		return std::max(arguments[0]-100,0.);
 	}
 	double rate_function(std::vector<double> arguments) {
-		return arguments[0];
+		return 0.01;
 	}
 	double volatility_function(std::vector<double> arguments) {
-		return arguments[0];
+		return 0.20;
 	}
-
 	double boundaries_up(std::vector<double> arguments) {
-		return arguments[0];
+		return  std::max(arguments[2] - 100, 0.);
 	}
 	double boundaries_down(std::vector<double> arguments) {
-		return arguments[0];
+		return std::max(arguments[3] - 100, 0.);
 	}
 
 	void test()
 	{
 		// make sure the arguments of the payoff are properly defined
-		int number_arguments_payoff(2);
-		double fwd=100;
+		int number_arguments(4);
+		double spot=100;
 		double strike=100;
+		double mesh_up_boundaries=150;
+		double mesh_down_boundaries=50;
 
-		std::vector<double> arguments(number_arguments_payoff);
-		arguments[0] = fwd;
+		std::vector<double> arguments(number_arguments);
+		arguments[0] = spot;
 		arguments[1] = strike;
+		arguments[2] = mesh_up_boundaries;
+		arguments[3] = mesh_down_boundaries;
 		initial_function payoff(payoff_function);
 		initial_function rate(rate_function);
 		initial_function volatility(volatility_function);
@@ -44,8 +48,9 @@ namespace dauphine
 		std::vector<double> mesh_boundaries(2);
 		mesh_boundaries[0] = 0;
 		mesh_boundaries[1] = 15;
-		mesh m(1,1,1,mesh_boundaries);
+		mesh m(1,1,1,100,0.5,mesh_boundaries);
 		std::cout << payoff.function_operator(arguments) << std::endl;
+		std::cout << diag_coeff(mesh, rate,arguments) << std::endl;
 
 	}
 }
