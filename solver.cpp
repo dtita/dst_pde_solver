@@ -55,6 +55,26 @@ namespace dauphine
 			return 1 / m.get_mesh_dt() + rate.function_operator(arguments)*m.get_mesh_theta()+1/(m.get_mesh_dx()*m.get_mesh_dx())*m.get_mesh_theta();
 		}
 	}
+	double subdiag_coeff(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments) {
+		if (arguments[0] == arguments[2])
+		{
+			return 0;
+		}
+		else
+		{
+			return -1 /2*m.get_mesh_theta()/ (m.get_mesh_dx()*m.get_mesh_dx()) +1/(4*m.get_mesh_dx())*m.get_mesh_theta()*(pow(vol.function_operator(arguments),2)-rate.function_operator(arguments));
+		}
+	}
+	double updiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments) {
+		if (arguments[0] == arguments[2])
+		{
+			return 0;
+		}
+		else
+		{
+			return -1 / 2 * m.get_mesh_theta() / (m.get_mesh_dx()*m.get_mesh_dx()) + 1 / (4 * m.get_mesh_dx())*m.get_mesh_theta()*(-pow(vol.function_operator(arguments), 2) +rate.function_operator(arguments));
+		}
+	}
 
 }
 

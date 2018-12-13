@@ -50,7 +50,7 @@ namespace dauphine
 		mesh_boundaries[1] = 15;
 		mesh m(1,1,1,100,0.5,mesh_boundaries);
 		std::cout << payoff.function_operator(arguments) << std::endl;
-		std::cout << diag_coeff(mesh, rate,arguments) << std::endl;
+		std::cout << diag_coeff(m, rate,arguments) << std::endl;
 
 	}
 }
