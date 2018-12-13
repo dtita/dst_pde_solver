@@ -40,7 +40,7 @@ namespace dauphine
 		std::vector<double> result(size);
 		for (std::size_t i = 0; i < result.size(); ++i)
 		{
-			result[i] = m_spot_boundaries[1]+i*m_dx;
+			result[i] =( m_spot_boundaries[1]+i*m_dx);
 		}
 		return result;
 	}
@@ -87,10 +87,19 @@ namespace dauphine
 		}
 	}
 
-	//std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
-
-	//	return 0;
-	//}
+	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
+		std::vector<double> result=m.spot_vector();
+		for (std::size_t i = 0; i < result.size(); i++) {
+			arguments[0] = result[i];
+			if (payoff.function_operator(arguments) == 0) {
+				result[i] = 0;
+			}
+			else {
+				result[i] = log(payoff.function_operator(arguments));
+			}
+		}
+		return result;
+	}
 
 }
 //std::vector<double> bound = m.get_mesh_spot_boundaries();

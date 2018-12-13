@@ -39,7 +39,7 @@ namespace dauphine
 	double diag_coeff(mesh m, initial_function rate, std::vector<double> arguments);
 	double subdiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments);
 	double updiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments);
-	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,initial_function payoff);
+	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,initial_function payoff);
 
 	//class matrix_elements {
 	//public:

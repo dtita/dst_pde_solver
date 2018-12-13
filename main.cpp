@@ -50,11 +50,12 @@ namespace dauphine
 		mesh_boundaries[1] = 50;
 		mesh m(1,1,1,100,0.5,mesh_boundaries);
 		std::cout << payoff.function_operator(arguments) << std::endl;
-		std::vector<double> test = m.spot_vector();
+		std::vector<double> test = initial_price_vector(m,rate,volatility,arguments,payoff);
+		
 		for (std::size_t i = 0; i < test.size(); i++) {
 			std::cout << test[i] << ' ';
 		}
-		payoff.function_operator(arguments)
+		payoff.function_operator(arguments);
 		std::cout << test[3] << std::endl;
 
 	}
