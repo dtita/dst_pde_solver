@@ -50,13 +50,14 @@ namespace dauphine
 		mesh_boundaries[1] = 50;
 		mesh m(1,1,1,100,0.5,mesh_boundaries);
 		std::cout << payoff.function_operator(arguments) << std::endl;
-		std::vector<double> test = initial_price_vector(m,rate,volatility,arguments,payoff);
-		
-		for (std::size_t i = 0; i < test.size(); i++) {
-			std::cout << test[i] << ' ';
+		std::vector<double> result = column_up(m,rate,volatility,arguments,payoff);
+		//result[60] = result[60] * diag_coeff(m, rate, arguments) + result[60 - 1] * subdiag_coeff(m, rate, volatility, arguments) + result[60 + 1] * updiag_coeff(m, rate, volatility, arguments);
+
+		for (std::size_t i = 0; i < result.size(); i++) {
+			std::cout << result[i] << ' ';
 		}
 		payoff.function_operator(arguments);
-		std::cout << test[3] << std::endl;
+		std::cout << result[60] << std::endl;
 
 	}
 }

@@ -100,6 +100,24 @@ namespace dauphine
 		}
 		return result;
 	}
+	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
+		std::vector<double> result = initial_price_vector(m, rate, vol, arguments, payoff);
+		
+		for (std::size_t i = 1; i < result.size()-1; i++) {
+			result[i] = result[i] * diag_coeff(m, rate, arguments) + result[i - 1] * subdiag_coeff(m, rate, vol, arguments) + result[i + 1] * updiag_coeff(m, rate, vol, arguments);
+		}
+		return result;
+	}
+
+	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
+		std::vector<double> result = initial_price_vector(m, rate, vol, arguments, payoff);
+		result[0] = result[0];
+		for (std::size_t i = 0; i < result.size(); i++) {
+			result[i] = result[i] * diag_coeff(m, rate, arguments) + result[i - 1] * subdiag_coeff(m, rate, vol, arguments) + result[i + 1] * updiag_coeff(m, rate, vol, arguments);
+		}
+		return result;
+	}
+	
 
 }
 //std::vector<double> bound = m.get_mesh_spot_boundaries();
