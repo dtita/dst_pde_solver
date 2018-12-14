@@ -111,22 +111,27 @@ namespace dauphine
 
 	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
 		std::vector<double> col_up = column_up(m, rate, vol, arguments, payoff);
-		std::vector<double> result;
+		std::vector<double> result(col_up.size());
 		double W = 0;
 		std::vector<double> arguments_up = arguments;
 		std::vector<double> arguments_down = arguments;
-		std::vector<double> B;
-		std::vector<double> D;
+		std::vector<double> B(col_up.size());
+		std::vector<double> D(col_up.size());
 
 		for (std::size_t i = 1; i < col_up.size(); i++) {
 			arguments_down[0] = arguments[3] + (i-1)*m.get_mesh_dx();
 			arguments[0] = arguments[3] + i*m.get_mesh_dx();
 			arguments_up[0] = arguments[3] + (i+1)*m.get_mesh_dx();
 			W = subdiag_coeff(m, rate, vol, arguments)/diag_coeff(m, rate, arguments_down);
-			B[i] = diag_coeff(m, rate, arguments)-W*updiag_coeff(m,rate,vol,arguments_down;
-			D[i]=col_up[i]-W*col_up[i-1]
+			B[i] = diag_coeff(m, rate, arguments)-W*updiag_coeff(m,rate,vol,arguments_down);
+			D[i] = col_up[i] - W*col_up[i - 1];
 		}
-
+		result[col_up.size() - 1] = D[col_up.size() - 1] / B[col_up.size() - 1];
+		std::size_t i = col_up.size()-2;
+		for (; i >-1; i--) {
+			result[i] = (D[i] - updiag_coeff(m, rate, vol, arguments)*result[i + 1])*B[i];
+			i = i;
+		}
 
 		return result;
 	}
