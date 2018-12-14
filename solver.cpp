@@ -9,8 +9,8 @@ namespace dauphine
 	//	: m_dt(1), m_dx(1), m_maturity(1), m_spot_boundaries([1,1])
 	//{
 	//}
-	mesh::mesh(double dt, double dx, double maturity, double spot,double theta, std::vector<double> boundaries)
-		: m_dt(dt), m_dx(dx), m_maturity(maturity),m_spot(spot),m_theta(theta), m_spot_boundaries(boundaries)
+	mesh::mesh(double dt, double dx, double maturity, double spot, std::vector<double> boundaries)
+		: m_dt(dt), m_dx(dx), m_maturity(maturity),m_spot(spot), m_spot_boundaries(boundaries)
 	{
 	}
 
@@ -29,9 +29,7 @@ namespace dauphine
 	double mesh::get_mesh_spot() const {
 		return m_spot;
 	}
-	double mesh::get_mesh_theta() const {
-		return m_theta;
-	}
+
 	std::vector<double> mesh::get_mesh_spot_boundaries() const {
 		return m_spot_boundaries;
 	}
@@ -63,7 +61,7 @@ namespace dauphine
 		}
 		else
 		{
-			return 1 / m.get_mesh_dt() + rate.function_operator(arguments)*m.get_mesh_theta()+1/(m.get_mesh_dx()*m.get_mesh_dx())*m.get_mesh_theta();
+			return 1 / m.get_mesh_dt() + rate.function_operator(arguments)*arguments[4]+1/(m.get_mesh_dx()*m.get_mesh_dx())*arguments[4];
 		}
 	}
 	double subdiag_coeff(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments) {
@@ -73,7 +71,7 @@ namespace dauphine
 		}
 		else
 		{
-			return -1 /2*m.get_mesh_theta()/ (m.get_mesh_dx()*m.get_mesh_dx()) +1/(4*m.get_mesh_dx())*m.get_mesh_theta()*(pow(vol.function_operator(arguments),2)-rate.function_operator(arguments));
+			return -1 /2* arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()) +1/(4*m.get_mesh_dx())*arguments[4] *(pow(vol.function_operator(arguments),2)-rate.function_operator(arguments));
 		}
 	}
 	double updiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments) {
@@ -83,7 +81,7 @@ namespace dauphine
 		}
 		else
 		{
-			return -1 / 2 * m.get_mesh_theta() / (m.get_mesh_dx()*m.get_mesh_dx()) + 1 / (4 * m.get_mesh_dx())*m.get_mesh_theta()*(-pow(vol.function_operator(arguments), 2) +rate.function_operator(arguments));
+			return -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()) + 1 / (4 * m.get_mesh_dx())*arguments[4] *(-pow(vol.function_operator(arguments), 2) +rate.function_operator(arguments));
 		}
 	}
 
