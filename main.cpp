@@ -57,6 +57,13 @@ namespace dauphine
 		for (std::size_t i = 0; i < result.size(); i++) {
 			std::cout << result[i] << ' ';
 		}
+		std::vector<double> test(2);
+		test[0] = 2;
+		test[1] = 18;
+		std::vector<double> testouille = test;
+		testouille[1] = 13;
+		std::cout << testouille[1] << std::endl;
+		std::cout << test[1] << std::endl;
 		payoff.function_operator(arguments);
 		std::cout << result[60] << std::endl;
 

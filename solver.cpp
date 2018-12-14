@@ -33,6 +33,8 @@ namespace dauphine
 	std::vector<double> mesh::get_mesh_spot_boundaries() const {
 		return m_spot_boundaries;
 	}
+
+
 	std::vector<double> mesh::spot_vector() {
 		int size = floor((m_spot_boundaries[0] - m_spot_boundaries[1]) / m_dx)+1;
 		std::vector<double> result(size);
@@ -100,7 +102,7 @@ namespace dauphine
 	}
 	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
 		std::vector<double> result = initial_price_vector(m, rate, vol, arguments, payoff);
-		
+		arguments[4] = arguments[4] - 1;
 		for (std::size_t i = 1; i < result.size()-1; i++) {
 			result[i] = result[i] * diag_coeff(m, rate, arguments) + result[i - 1] * subdiag_coeff(m, rate, vol, arguments) + result[i + 1] * updiag_coeff(m, rate, vol, arguments);
 		}
@@ -108,11 +110,24 @@ namespace dauphine
 	}
 
 	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
-		std::vector<double> result = initial_price_vector(m, rate, vol, arguments, payoff);
-		result[0] = result[0];
-		for (std::size_t i = 0; i < result.size(); i++) {
-			result[i] = result[i] * diag_coeff(m, rate, arguments) + result[i - 1] * subdiag_coeff(m, rate, vol, arguments) + result[i + 1] * updiag_coeff(m, rate, vol, arguments);
+		std::vector<double> col_up = column_up(m, rate, vol, arguments, payoff);
+		std::vector<double> result;
+		double W = 0;
+		std::vector<double> arguments_up = arguments;
+		std::vector<double> arguments_down = arguments;
+		std::vector<double> B;
+		std::vector<double> D;
+
+		for (std::size_t i = 1; i < col_up.size(); i++) {
+			arguments_down[0] = arguments[3] + (i-1)*m.get_mesh_dx();
+			arguments[0] = arguments[3] + i*m.get_mesh_dx();
+			arguments_up[0] = arguments[3] + (i+1)*m.get_mesh_dx();
+			W = subdiag_coeff(m, rate, vol, arguments)/diag_coeff(m, rate, arguments_down);
+			B[i] = diag_coeff(m, rate, arguments)-W*updiag_coeff(m,rate,vol,arguments_down;
+			D[i]=col_up[i]-W*col_up[i-1]
 		}
+
+
 		return result;
 	}
 	
