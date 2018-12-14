@@ -8,12 +8,11 @@ namespace dauphine
 	class mesh {
 	public:
 		//mesh();
-		mesh(double dt, double dx,double maturity, double spot, double theta, std::vector<double> spot_boundaries);
+		mesh(double dt, double dx,double maturity, double spot, std::vector<double> spot_boundaries);
 		double get_mesh_dt() const;
 		double get_mesh_maturity() const;
 		double get_mesh_dx() const;
 		double get_mesh_spot() const;
-		double get_mesh_theta() const;
 		std::vector<double> spot_vector();
 		std::vector<double> get_mesh_spot_boundaries() const;
 		~mesh();
@@ -22,7 +21,6 @@ namespace dauphine
 		double m_dx;
 		double m_maturity;
 		double m_spot;
-		double m_theta;
 		std::vector<double> m_spot_boundaries;
 	};
 

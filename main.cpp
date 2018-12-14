@@ -34,6 +34,7 @@ namespace dauphine
 		double mesh_up_boundaries=150;
 		double mesh_down_boundaries=50;
 		double theta = 0.5;
+
 		std::vector<double> arguments(number_arguments);
 		arguments[0] = spot;
 		arguments[1] = strike;
@@ -48,7 +49,7 @@ namespace dauphine
 		std::vector<double> mesh_boundaries(2);
 		mesh_boundaries[0] = 150;
 		mesh_boundaries[1] = 50;
-		mesh m(1,1,1,100,0.5,mesh_boundaries);
+		mesh m(1,1,1,100,mesh_boundaries);
 		std::cout << payoff.function_operator(arguments) << std::endl;
 		std::vector<double> result = column_up(m,rate,volatility,arguments,payoff);
 		//result[60] = result[60] * diag_coeff(m, rate, arguments) + result[60 - 1] * subdiag_coeff(m, rate, volatility, arguments) + result[60 + 1] * updiag_coeff(m, rate, volatility, arguments);
