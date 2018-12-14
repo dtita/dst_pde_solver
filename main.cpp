@@ -8,7 +8,7 @@
 namespace dauphine
 {	
 	//Initial functions to be changed according to the user's needs
-	//modify this function to modify the payoff, arguments=[spot,maturity,mesh_boundaries_up,mesh_boundaries_down]
+	//modify this function to modify the payoff, arguments=[spot,maturity,mesh_boundaries_up,mesh_boundaries_down,theta]
 	double payoff_function(std::vector<double> arguments) {
 		return std::max(arguments[0]-100,0.);
 	}
@@ -28,12 +28,12 @@ namespace dauphine
 	void test()
 	{
 		// make sure the arguments of the payoff are properly defined
-		int number_arguments(4);
+		int number_arguments(5);
 		double spot=100;
 		double strike=100;
 		double mesh_up_boundaries=150;
 		double mesh_down_boundaries=50;
-
+		double theta = 0.5;
 		std::vector<double> arguments(number_arguments);
 		arguments[0] = spot;
 		arguments[1] = strike;
