@@ -41,6 +41,9 @@ namespace dauphine
 		arguments[2] = mesh_up_boundaries;
 		arguments[3] = mesh_down_boundaries;
 		arguments[4] = theta;
+		std::vector<double> mesh_boundaries(2);
+		mesh_boundaries[0] = 300;
+		mesh_boundaries[1] = 20;
 
 		initial_function payoff(payoff_function);
 		initial_function rate(rate_function);
@@ -48,9 +51,7 @@ namespace dauphine
 		initial_function up_boundaries(boundaries_up);
 		initial_function down_boundaries(boundaries_down);
 
-		std::vector<double> mesh_boundaries(2);
-		mesh_boundaries[0] = 300;
-		mesh_boundaries[1] = 20;
+
 		mesh m(1,1,1,100,mesh_boundaries);
 
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
