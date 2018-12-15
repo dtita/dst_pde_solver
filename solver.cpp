@@ -40,7 +40,7 @@ namespace dauphine
 		std::vector<double> result(size);
 		for (std::size_t i = 0; i < result.size(); ++i)
 		{
-			result[i] =( m_spot_boundaries[1]+i*m_dx);
+			result[i] =(m_spot_boundaries[1]+i*m_dx);
 		}
 		return result;
 	}

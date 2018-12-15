@@ -31,8 +31,8 @@ namespace dauphine
 		int number_arguments(5);
 		double spot=100;
 		double maturity=1;
-		double mesh_up_boundaries=150;
-		double mesh_down_boundaries=50;
+		double mesh_up_boundaries=300;
+		double mesh_down_boundaries=20;
 		double theta = 0.5;
 
 		std::vector<double> arguments(number_arguments);
