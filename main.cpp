@@ -49,8 +49,8 @@ namespace dauphine
 		initial_function down_boundaries(boundaries_down);
 
 		std::vector<double> mesh_boundaries(2);
-		mesh_boundaries[0] = 150;
-		mesh_boundaries[1] = 50;
+		mesh_boundaries[0] = 300;
+		mesh_boundaries[1] = 20;
 		mesh m(1,1,1,100,mesh_boundaries);
 
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);

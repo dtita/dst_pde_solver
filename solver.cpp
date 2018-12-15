@@ -5,10 +5,7 @@
 #include <cstdlib>
 namespace dauphine
 {
-	//mesh::mesh()
-	//	: m_dt(1), m_dx(1), m_maturity(1), m_spot_boundaries([1,1])
-	//{
-	//}
+
 	mesh::mesh(double dt, double dx, double maturity, double spot, std::vector<double> boundaries)
 		: m_dt(dt), m_dx(dx), m_maturity(maturity),m_spot(spot), m_spot_boundaries(boundaries)
 	{
@@ -98,6 +95,7 @@ namespace dauphine
 		return result;
 	}
 
+	//algo used : https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
 	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> col_up) {
 		std::vector<double> result(col_up.size());
 		double W = 0;
@@ -113,10 +111,10 @@ namespace dauphine
 			B[i] = diag_coeff(m, rate,vol, arguments)-W*updiag_coeff(m,rate,vol,arguments_down);
 			D[i] = col_up[i] - W*col_up[i - 1];
 		}
-		result[col_up.size() - 1] = col_up[col_up.size()-1];
+		result[col_up.size() - 1] = (col_up[col_up.size()-1]);
 		for (std::size_t i = col_up.size() - 2; i >0; i--) {
 			arguments[0] = arguments[3] + i*m.get_mesh_dx();
-			result[i] = (D[i] - updiag_coeff(m, rate, vol, arguments)*result[i + 1])/B[i];
+			result[i] =( (D[i] - updiag_coeff(m, rate, vol, arguments)*result[i + 1])/B[i]);
 			i = i;
 		}
 		return result;
@@ -130,7 +128,7 @@ namespace dauphine
 		std::vector<double> result1(col_up.size());
 		for (int i = 1; i < nb_step; i++) {
 			arguments[1] = arguments[1] - m.get_mesh_dt();
-			result1=price_vector(m, rate, vol, arguments, payoff, result2);
+			result1=(price_vector(m, rate, vol, arguments, payoff, result2));
 			result2 = column_up(m,rate,vol,arguments,payoff,result1);
 		}
 		return result1;
@@ -140,16 +138,4 @@ namespace dauphine
 	
 
 }
-//std::vector<double> bound = m.get_mesh_spot_boundaries();
-//int size = (bound[0] - bound[1]) / m.get_mesh_dx();
-//std::vector<double> result(size);
-//	double rate::function_operator(std::vector<double> arguments) {
-//		return m_f(arguments);
-//	}
-//	rate::~rate() {
-//	}
-//
-//	price_vector::price_vector() {
-//	}
-//}
 
