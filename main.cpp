@@ -13,7 +13,7 @@ namespace dauphine
 		return std::max(arguments[0]-100,0.);
 	}
 	double rate_function(std::vector<double> arguments) {
-		return 0.01;
+		return 0.00;
 	}
 	double volatility_function(std::vector<double> arguments) {
 		return 0.20;
@@ -30,16 +30,18 @@ namespace dauphine
 		// make sure the arguments of the payoff are properly defined
 		int number_arguments(5);
 		double spot=100;
-		double strike=100;
+		double maturity=1;
 		double mesh_up_boundaries=150;
 		double mesh_down_boundaries=50;
 		double theta = 0.5;
 
 		std::vector<double> arguments(number_arguments);
 		arguments[0] = spot;
-		arguments[1] = strike;
+		arguments[1] = maturity;
 		arguments[2] = mesh_up_boundaries;
 		arguments[3] = mesh_down_boundaries;
+		arguments[4] = theta;
+
 		initial_function payoff(payoff_function);
 		initial_function rate(rate_function);
 		initial_function volatility(volatility_function);
@@ -50,28 +52,14 @@ namespace dauphine
 		mesh_boundaries[0] = 150;
 		mesh_boundaries[1] = 50;
 		mesh m(1,1,1,100,mesh_boundaries);
-		std::cout << payoff.function_operator(arguments) << std::endl;
-		std::vector<double> result = price_vector(m,rate,volatility,arguments,payoff);
-		//result[60] = result[60] * diag_coeff(m, rate, arguments) + result[60 - 1] * subdiag_coeff(m, rate, volatility, arguments) + result[60 + 1] * updiag_coeff(m, rate, volatility, arguments);
 
-		for (std::size_t i = 0; i < result.size(); i++) {
-			std::cout << result[i] << ' ';
-		}
-		std::vector<double> test(2);
-		test[0] = 2;
-		test[1] = 18;
-		std::vector<double> testouille = test;
-		testouille[1] = 13;
-		std::cout << testouille[1] << std::endl;
-		std::cout << test[1] << std::endl;
-		payoff.function_operator(arguments);
-		//std::cout << result[60] << std::endl;
+		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
 
 	}
 }
 int main(int argc, char* argv[])
 {
-	std::cout << dauphine::bs_price(100,100,0.2,5,true) << std::endl;
+	std::cout << dauphine::bs_price(100,100,0.2,1,true) << std::endl;
 	dauphine::test();
     return 0;
 }

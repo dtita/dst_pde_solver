@@ -2,7 +2,7 @@
 #include <cmath>
 #include <limits>
 #include <algorithm>
-
+#include <cstdlib>
 namespace dauphine
 {
 	//mesh::mesh()
@@ -21,7 +21,7 @@ namespace dauphine
 		return m_maturity;
 	}
 	double mesh::get_mesh_dt() const {
-		return m_dt;
+		return m_dt/365;
 	}
 	double mesh::get_mesh_dx() const {
 		return m_dx;
@@ -56,84 +56,86 @@ namespace dauphine
 	initial_function::~initial_function() {
 	}
 
-	double diag_coeff(mesh m, initial_function rate, std::vector<double> arguments) {
+	double diag_coeff(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments) {
 		if (arguments[0] == arguments[2]|| arguments[0] == arguments[3])
 		{
 			return 1;
 		}
 		else
 		{
-			return 1 / m.get_mesh_dt() + rate.function_operator(arguments)*arguments[4]+1/(m.get_mesh_dx()*m.get_mesh_dx())*arguments[4];
+			return 1 / m.get_mesh_dt() + rate.function_operator(arguments)*arguments[4]+1/(m.get_mesh_dx()*m.get_mesh_dx())*arguments[4]*pow(vol.function_operator(arguments),2);
 		}
 	}
 	double subdiag_coeff(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments) {
-		if (arguments[0] == arguments[2])
-		{
-			return 0;
-		}
-		else
-		{
-			return -1 /2* arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()) +1/(4*m.get_mesh_dx())*arguments[4] *(pow(vol.function_operator(arguments),2)-rate.function_operator(arguments));
-		}
+			return -1 /2* arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) +1/(4*m.get_mesh_dx())*arguments[4] *(pow(vol.function_operator(arguments),2)-rate.function_operator(arguments));
 	}
 	double updiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments) {
-		if (arguments[0] == arguments[2])
-		{
-			return 0;
-		}
-		else
-		{
-			return -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()) + 1 / (4 * m.get_mesh_dx())*arguments[4] *(-pow(vol.function_operator(arguments), 2) +rate.function_operator(arguments));
-		}
+
+			return -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) + 1 / (4 * m.get_mesh_dx())*arguments[4] *(-pow(vol.function_operator(arguments), 2) +rate.function_operator(arguments));
 	}
 
 	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
 		std::vector<double> result=m.spot_vector();
 		for (std::size_t i = 0; i < result.size(); i++) {
-			arguments[0] = result[i];
+			arguments[0] = (result[i]);
 			if (payoff.function_operator(arguments) == 0) {
 				result[i] = 0;
 			}
 			else {
-				result[i] = log(payoff.function_operator(arguments));
+				result[i] = (payoff.function_operator(arguments));
 			}
 		}
 		return result;
 	}
-	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
-		std::vector<double> result = initial_price_vector(m, rate, vol, arguments, payoff);
+	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> up_price) {
+		std::vector<double> result = up_price;
+		std::vector<double> result2 = m.spot_vector();
 		arguments[4] = arguments[4] - 1;
 		for (std::size_t i = 1; i < result.size()-1; i++) {
-			result[i] = result[i] * diag_coeff(m, rate, arguments) + result[i - 1] * subdiag_coeff(m, rate, vol, arguments) + result[i + 1] * updiag_coeff(m, rate, vol, arguments);
+			arguments[0] = result[i];
+			result[i] = result[i] * diag_coeff(m, rate,vol ,arguments) + result[i - 1] * subdiag_coeff(m, rate, vol, arguments) + result[i + 1] * updiag_coeff(m, rate, vol, arguments);
 		}
 		return result;
 	}
 
-	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
-		std::vector<double> col_up = column_up(m, rate, vol, arguments, payoff);
+	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> col_up) {
 		std::vector<double> result(col_up.size());
 		double W = 0;
 		std::vector<double> arguments_up = arguments;
 		std::vector<double> arguments_down = arguments;
 		std::vector<double> B(col_up.size());
 		std::vector<double> D(col_up.size());
-
 		for (std::size_t i = 1; i < col_up.size(); i++) {
 			arguments_down[0] = arguments[3] + (i-1)*m.get_mesh_dx();
 			arguments[0] = arguments[3] + i*m.get_mesh_dx();
 			arguments_up[0] = arguments[3] + (i+1)*m.get_mesh_dx();
-			W = subdiag_coeff(m, rate, vol, arguments)/diag_coeff(m, rate, arguments_down);
-			B[i] = diag_coeff(m, rate, arguments)-W*updiag_coeff(m,rate,vol,arguments_down);
+			W = subdiag_coeff(m, rate, vol, arguments)/diag_coeff(m, rate,vol, arguments_down);
+			B[i] = diag_coeff(m, rate,vol, arguments)-W*updiag_coeff(m,rate,vol,arguments_down);
 			D[i] = col_up[i] - W*col_up[i - 1];
 		}
-		result[col_up.size() - 1] = D[col_up.size() - 1] / B[col_up.size() - 1];
-		std::size_t i = col_up.size()-2;
-		for (; i >-1; i--) {
-			result[i] = (D[i] - updiag_coeff(m, rate, vol, arguments)*result[i + 1])*B[i];
+		result[col_up.size() - 1] = col_up[col_up.size()-1];
+		for (std::size_t i = col_up.size() - 2; i >0; i--) {
+			arguments[0] = arguments[3] + i*m.get_mesh_dx();
+			result[i] = (D[i] - updiag_coeff(m, rate, vol, arguments)*result[i + 1])/B[i];
 			i = i;
 		}
-
 		return result;
+	}
+	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
+		std::vector<double> ini_price(initial_price_vector(m, rate, vol, arguments, payoff));
+		std::vector<double> col_up(column_up(m, rate, vol, arguments, payoff, ini_price));
+		double dt = m.get_mesh_dt();
+		std::vector<double> result2 = col_up;
+		int nb_step =floor( arguments[1] / dt);
+		std::vector<double> result1(col_up.size());
+		for (int i = 1; i < nb_step; i++) {
+			arguments[1] = arguments[1] - m.get_mesh_dt();
+			result1=price_vector(m, rate, vol, arguments, payoff, result2);
+			result2 = column_up(m,rate,vol,arguments,payoff,result1);
+		}
+		return result1;
+
+
 	}
 	
 

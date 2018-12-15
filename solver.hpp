@@ -34,29 +34,14 @@ namespace dauphine
 	private:
 		double(*m_f)(std::vector<double>);
 	};
-	double diag_coeff(mesh m, initial_function rate, std::vector<double> arguments);
+	double diag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments);
 	double subdiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments);
 	double updiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments);
 	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,initial_function payoff);
-	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff);
-	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff);
-	//class matrix_elements {
-	//public:
-	//	matrix_elements(initial_function rate);
-	//};
-	//class diag_coeff : public matrix_elements{
-	//public:
-	//	double diag_function();
-	//};
+	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> up_price);
+	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff, std::vector<double> col_up);
+	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff);
 
-
-	class price_vector {
-	public: 
-		price_vector(initial_function payoff, mesh m, std::vector<double> arguments);
-	private:
-		initial_function m_payoff;
-		mesh m_m;
-	};
 
 }
 
