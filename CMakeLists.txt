@@ -24,6 +24,10 @@ set(PDE_SOLVER_SRCS
     closed_form.hpp
     closed_form.cpp
     main.cpp
+    params.cpp
+    params.hpp
+    mesh.cpp
+    mesh.hpp
 	solver.hpp
 	solver.cpp)
 

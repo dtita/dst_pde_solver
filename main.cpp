@@ -1,6 +1,8 @@
 #include <iostream>
 #include "closed_form.hpp"
 #include "solver.hpp"
+#include "params.hpp"
+#include "mesh.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>

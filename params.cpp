@@ -35,9 +35,5 @@ namespace dauphine
         return m_spot;
     }
     
-    std::vector<double> params::get_spot_boundaries() const {
-        return m_spot_boundaries;
-    }
-    
     
 }
