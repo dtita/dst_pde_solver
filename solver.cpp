@@ -62,30 +62,30 @@ namespace dauphine
 	double diag_coeff(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments) {
 		if (arguments[0] == arguments[2]|| arguments[0] == arguments[3])
 		{
-			return 1;
+			return 1.0;
 		}
 		else
 		{
-			return 1 / m.get_mesh_dt() + rate.function_operator(arguments)*arguments[4]+1/(m.get_mesh_dx()*m.get_mesh_dx())*arguments[4]*pow(vol.function_operator(arguments),2);
+			return 1.0 / m.get_mesh_dt() + rate.function_operator(arguments)*arguments[4]+1.0/(m.get_mesh_dx()*m.get_mesh_dx())*arguments[4]*pow(vol.function_operator(arguments),2);
 		}
 	}
 	double subdiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments) {
 		if (arguments[0] == arguments[2] || arguments[0] == arguments[3])
 		{
-			return 0;
+			return 0.;
 		}
 		else {
-			return -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) + 1 / (4 * m.get_mesh_dx())*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments));
+			return -1.0 / 2.0 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) - 1.0 / (4.0 * m.get_mesh_dx())*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments));
 		}
 	}
 
 	double updiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments) {
 		if (arguments[0] == arguments[2] || arguments[0] == arguments[3])
 		{
-			return 0;
+			return 0.;
 		}
 		else {
-			return -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) + 1 / (4 * m.get_mesh_dx())*arguments[4] * (-pow(vol.function_operator(arguments), 2) + rate.function_operator(arguments));
+			return -1.0 / 2.0 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) + 1.0 / (4.0 * m.get_mesh_dx())*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments));
 		}
 	}
 
@@ -136,8 +136,11 @@ namespace dauphine
 			arguments_down[0] = arguments[3] + (i - 1)*m.get_mesh_dx();
 			arguments[0] = arguments[3] + i*m.get_mesh_dx();
 			arguments_up[0] = arguments[3] + (i + 1)*m.get_mesh_dx();
-			double test = diag_coeff(m, rate, vol, arguments_down);
-			double test2 = updiag_coeff(m, rate, vol, arguments_down);
+			double a = diag_coeff(m, rate, vol, arguments);
+			double c = updiag_coeff(m, rate, vol, arguments);
+			double b = subdiag_coeff(m, rate, vol, arguments);
+			double test = -1.0 / 2 * arguments[4] ;
+			//double test = -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2);
 			W = subdiag_coeff(m, rate, vol, arguments) / diag_coeff(m, rate, vol, arguments_down);
 			B[i] = diag_coeff(m, rate, vol, arguments) - W*updiag_coeff(m, rate, vol, arguments_down);
 			D[i] = col_up[i] - W*col_up[i - 1];
@@ -148,26 +151,6 @@ namespace dauphine
 			i = i;
 		}
 
-		//for (std::size_t i = 1; i < size - 1; i++) {
-		//	arguments_down[0] = arguments[3] + (i - 1)*m.get_mesh_dx();
-		//	arguments[0] = arguments[3] + i*m.get_mesh_dx();
-		//	arguments_up[0] = arguments[3] + (i + 1)*m.get_mesh_dx();
-		//	B[i] = subdiag_coeff(m, rate, vol, arguments) / (diag_coeff(m, rate, vol, arguments_down) - B[i - 1] * updiag_coeff(m, rate, vol, arguments_down));
-		//	D[i] = (col_up[i] - D[i - 1] * updiag_coeff(m, rate, vol, arguments_down)) / (diag_coeff(m, rate, vol, arguments_down) - B[i - 1] * updiag_coeff(m, rate, vol, arguments_down));
-		//}
-
-/*		B[0] = 0;
-		D[0] = col_up[0];
-
-		std::size_t i( col_up.size() - 1);
-		B[i] = B[i - 1] * updiag_coeff(m, rate, vol, arguments_down);
-		D[i] = (col_up[i] - D[i - 1] * updiag_coeff(m, rate, vol, arguments_down)) / (diag_coeff(m, rate, vol, arguments_down) - B[i - 1] * updiag_coeff(m, rate, vol, arguments_down));
-		result[col_up.size() - 1] = (col_up[col_up.size()-1]);
-		for (std::size_t i = col_up.size() - 2; i >0; i--) {
-			arguments[0] = arguments[3] + i*m.get_mesh_dx();
-			result[i] = D[i] - B[i] * result[i + 1];
-			i = i;
-		}*/
 		return result;
 	}
 
@@ -186,8 +169,6 @@ namespace dauphine
 			result2 = column_up(m,rate,vol,arguments,payoff,result1);
 		}
 		return result1;
-
-
 	}
 	
 

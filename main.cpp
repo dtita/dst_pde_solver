@@ -31,11 +31,11 @@ namespace dauphine
 	{
 		// make sure the arguments of the payoff are properly defined
 		int number_arguments(5);
-		double spot=100;
-		double maturity=1;
-		double mesh_up_boundaries=300;
-		double mesh_down_boundaries=20;
-		double theta = 0.5;
+		double spot=100.;
+		double maturity=1.;
+		double mesh_up_boundaries=300.;
+		double mesh_down_boundaries=20.;
+		double theta = 1.0;
 
 		std::vector<double> arguments(number_arguments);
 		arguments[0] = spot;
@@ -44,8 +44,8 @@ namespace dauphine
 		arguments[3] = mesh_down_boundaries;
 		arguments[4] = theta;
 		std::vector<double> mesh_boundaries(2);
-		mesh_boundaries[0] = 300;
-		mesh_boundaries[1] = 20;
+		mesh_boundaries[0] = 300.0;
+		mesh_boundaries[1] = 20.0;
 
 		initial_function payoff(payoff_function);
 		initial_function rate(rate_function);
@@ -54,7 +54,7 @@ namespace dauphine
 		initial_function down_boundaries(boundaries_down);
 
 
-		mesh m(1,1,1,100,mesh_boundaries);
+		mesh m(1.,1,1.,100.,mesh_boundaries);
 
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
 
