@@ -47,10 +47,13 @@ namespace dauphine
 		: m_f(f)
 	{
 	}
-	double initial_function::function_operator(std::vector<double> arguments) {
+	double initial_function::function_operator(std::vector<double> arguments)
+    {
 		return m_f(arguments);
 	}
-	initial_function::~initial_function() {
+    
+	initial_function::~initial_function()
+    {
 	}
 
 
