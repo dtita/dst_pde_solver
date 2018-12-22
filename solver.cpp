@@ -53,6 +53,9 @@ namespace dauphine
 	initial_function::~initial_function() {
 	}
 
+
+	// les fonctions ici sont pour les calculs des coeffs de la matrice tridiagonale sub = diag dessous, diag = diagonale,
+	// il y a peut être une erreur dans les coeffs donc il faudrait qu'on fasse tous les trois le calcul et on compare pour être sur
 	double diag_coeff(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments) {
 		if (arguments[0] == arguments[2]|| arguments[0] == arguments[3])
 		{
@@ -71,6 +74,9 @@ namespace dauphine
 			return -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) + 1 / (4 * m.get_mesh_dx())*arguments[4] *(-pow(vol.function_operator(arguments), 2) +rate.function_operator(arguments));
 	}
 
+
+
+	// ici je compute le vecteur à la maturité pour avoir le prix à matu et pouvoir faire backward, donc c'est juste appliqué le payoff pour le spot
 	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
 		std::vector<double> result=m.spot_vector();
 		for (std::size_t i = 0; i < result.size(); i++) {
@@ -84,6 +90,9 @@ namespace dauphine
 		}
 		return result;
 	}
+
+	// une fois que j'ai un vecteur de prix je voudrais le transformer en le mutlipliant par la matrice M(1-theta)
+	// comme ça la partie de droite du problème ne sera qu'un vecteur
 	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> up_price) {
 		std::vector<double> result = up_price;
 		std::vector<double> result2 = m.spot_vector();
@@ -96,6 +105,8 @@ namespace dauphine
 	}
 
 	//algo used : https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
+	// là j'utilise en gros l'algo du lien au dessus pour solver, mais je pense qu'il faudrait le refaire à la main pour être
+	// sur que ça marche vraiment, dans le wiki y a la démo et ça montre comment le faire à la main
 	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> col_up) {
 		std::vector<double> result(col_up.size());
 		double W = 0;
@@ -129,6 +140,9 @@ namespace dauphine
 		}
 		return result;
 	}
+
+
+	//une fois que j'ai l'algo pour solver au dessus je boucle jusqu'à arriver à t=0 et avoir le prix initial
 	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
 		std::vector<double> ini_price(initial_price_vector(m, rate, vol, arguments, payoff));
 		std::vector<double> col_up(column_up(m, rate, vol, arguments, payoff, ini_price));
