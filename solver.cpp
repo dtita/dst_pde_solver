@@ -69,12 +69,24 @@ namespace dauphine
 			return 1 / m.get_mesh_dt() + rate.function_operator(arguments)*arguments[4]+1/(m.get_mesh_dx()*m.get_mesh_dx())*arguments[4]*pow(vol.function_operator(arguments),2);
 		}
 	}
-	double subdiag_coeff(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments) {
-			return -1 /2* arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) +1/(4*m.get_mesh_dx())*arguments[4] *(pow(vol.function_operator(arguments),2)-rate.function_operator(arguments));
+	double subdiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments) {
+		if (arguments[0] == arguments[2] || arguments[0] == arguments[3])
+		{
+			return 0;
+		}
+		else {
+			return -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) + 1 / (4 * m.get_mesh_dx())*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments));
+		}
 	}
-	double updiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments) {
 
-			return -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) + 1 / (4 * m.get_mesh_dx())*arguments[4] *(-pow(vol.function_operator(arguments), 2) +rate.function_operator(arguments));
+	double updiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments) {
+		if (arguments[0] == arguments[2] || arguments[0] == arguments[3])
+		{
+			return 0;
+		}
+		else {
+			return -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) + 1 / (4 * m.get_mesh_dx())*arguments[4] * (-pow(vol.function_operator(arguments), 2) + rate.function_operator(arguments));
+		}
 	}
 
 
@@ -111,21 +123,42 @@ namespace dauphine
 	// là j'utilise en gros l'algo du lien au dessus pour solver, mais je pense qu'il faudrait le refaire à la main pour être
 	// sur que ça marche vraiment, dans le wiki y a la démo et ça montre comment le faire à la main
 	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> col_up) {
-		std::vector<double> result(col_up.size());
+		int size = col_up.size();
+		std::vector<double> result(size);
 		double W = 0;
 		std::vector<double> arguments_up = arguments;
 		std::vector<double> arguments_down = arguments;
-		std::vector<double> B(col_up.size());
-		std::vector<double> D(col_up.size());
-		B[0] = 0;
-		D[0] = col_up[0];
-		for (std::size_t i = 1; i < col_up.size()-1; i++) {
-			arguments_down[0] = arguments[3] + (i-1)*m.get_mesh_dx();
+		std::vector<double> B(size);
+		std::vector<double> D(size);
+		result[0] = col_up[0];
+		result[size-1] = col_up[size-1];
+		for (std::size_t i = 1; i < size - 1; i++) {
+			arguments_down[0] = arguments[3] + (i - 1)*m.get_mesh_dx();
 			arguments[0] = arguments[3] + i*m.get_mesh_dx();
-			arguments_up[0] = arguments[3] + (i+1)*m.get_mesh_dx();
-			B[i] = subdiag_coeff(m, rate, vol, arguments) / (diag_coeff(m, rate, vol, arguments_down) - B[i - 1] * updiag_coeff(m, rate, vol, arguments_down));
-			D[i] = (col_up[i] - D[i - 1] * updiag_coeff(m, rate, vol, arguments_down)) / (diag_coeff(m, rate, vol, arguments_down) - B[i - 1] * updiag_coeff(m, rate, vol, arguments_down));
+			arguments_up[0] = arguments[3] + (i + 1)*m.get_mesh_dx();
+			double test = diag_coeff(m, rate, vol, arguments_down);
+			double test2 = updiag_coeff(m, rate, vol, arguments_down);
+			W = subdiag_coeff(m, rate, vol, arguments) / diag_coeff(m, rate, vol, arguments_down);
+			B[i] = diag_coeff(m, rate, vol, arguments) - W*updiag_coeff(m, rate, vol, arguments_down);
+			D[i] = col_up[i] - W*col_up[i - 1];
+			}
+		for (std::size_t i = col_up.size() - 2; i >0; i--) {
+			arguments[0] = arguments[3] + i*m.get_mesh_dx();
+			result[i] = (D[i] -updiag_coeff(m,rate,vol,arguments)*result[i+1])/B[i];
+			i = i;
 		}
+
+		//for (std::size_t i = 1; i < size - 1; i++) {
+		//	arguments_down[0] = arguments[3] + (i - 1)*m.get_mesh_dx();
+		//	arguments[0] = arguments[3] + i*m.get_mesh_dx();
+		//	arguments_up[0] = arguments[3] + (i + 1)*m.get_mesh_dx();
+		//	B[i] = subdiag_coeff(m, rate, vol, arguments) / (diag_coeff(m, rate, vol, arguments_down) - B[i - 1] * updiag_coeff(m, rate, vol, arguments_down));
+		//	D[i] = (col_up[i] - D[i - 1] * updiag_coeff(m, rate, vol, arguments_down)) / (diag_coeff(m, rate, vol, arguments_down) - B[i - 1] * updiag_coeff(m, rate, vol, arguments_down));
+		//}
+
+/*		B[0] = 0;
+		D[0] = col_up[0];
+
 		std::size_t i( col_up.size() - 1);
 		B[i] = B[i - 1] * updiag_coeff(m, rate, vol, arguments_down);
 		D[i] = (col_up[i] - D[i - 1] * updiag_coeff(m, rate, vol, arguments_down)) / (diag_coeff(m, rate, vol, arguments_down) - B[i - 1] * updiag_coeff(m, rate, vol, arguments_down));
@@ -134,7 +167,7 @@ namespace dauphine
 			arguments[0] = arguments[3] + i*m.get_mesh_dx();
 			result[i] = D[i] - B[i] * result[i + 1];
 			i = i;
-		}
+		}*/
 		return result;
 	}
 
