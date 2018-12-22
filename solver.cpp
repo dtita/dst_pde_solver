@@ -136,11 +136,6 @@ namespace dauphine
 			arguments_down[0] = arguments[3] + (i - 1)*m.get_mesh_dx();
 			arguments[0] = arguments[3] + i*m.get_mesh_dx();
 			arguments_up[0] = arguments[3] + (i + 1)*m.get_mesh_dx();
-			double a = diag_coeff(m, rate, vol, arguments);
-			double c = updiag_coeff(m, rate, vol, arguments);
-			double b = subdiag_coeff(m, rate, vol, arguments);
-			double test = -1.0 / 2 * arguments[4] ;
-			//double test = -1 / 2 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2);
 			W = subdiag_coeff(m, rate, vol, arguments) / diag_coeff(m, rate, vol, arguments_down);
 			B[i] = diag_coeff(m, rate, vol, arguments) - W*updiag_coeff(m, rate, vol, arguments_down);
 			D[i] = col_up[i] - W*col_up[i - 1];
