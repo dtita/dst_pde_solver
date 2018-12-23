@@ -23,7 +23,7 @@ namespace dauphine
             double get_dt() const;
             double get_maturity() const;
             double get_dx() const;
-            double get_spot() const
+            double get_spot() const;
             double get_theta() const;
             std::vector<double> get_spot_boundaries() const;
             virtual ~params();
@@ -37,7 +37,17 @@ namespace dauphine
             std::vector<double> m_spot_boundaries;
         
     };
-    
+
+// class permettant de generer des fonctions pour la vol, rate...
+ //   class function{
+ //       public:
+ //           new_function(double(*f)(std::vector<double>));
+ //           double function_operator(std::vector<double> arguments);
+ //           virtual ~new_function();
+ //       private:
+//            double(*m_f)(std::vector<double>);
+        
+ //   };
 }
 
 #endif /* params_hpp */
