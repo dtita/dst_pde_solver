@@ -57,12 +57,22 @@ namespace dauphine
 		mesh m(1.,1,1.,100.,mesh_boundaries);
 
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
-
+        
+        std::cout <<"Price: "<<result[81] << std::endl;
+        
+        //std::vector<double> col=a_vector(1,10);
+        
+        for (std::size_t i = 0; i < result.size(); ++i)
+        {
+            std::cout << i<<"-"<<result[i] << std::endl;
+        }
+        
+        
 	}
 }
 int main(int argc, char* argv[])
 {
-	std::cout << dauphine::bs_price(100,100,0.2,1,true) << std::endl;
+	std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.2,1,true) << std::endl;
 	dauphine::test();
     return 0;
 }

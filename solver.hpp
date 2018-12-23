@@ -42,7 +42,14 @@ namespace dauphine
 	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff, std::vector<double> col_up);
 	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff);
 
-
+  
+    // Autre methode - TEST
+    
+    std::vector<double> up_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments);
+    std::vector<double> sub_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments);
+    std::vector<double> diag_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments);
+    void tridiag_algorithm(const std::vector<double>& a,const std::vector<double>& b,const std::vector<double>& c,const std::vector<double>& d,std::vector<double>& f);
+    
 }
 
 #endif

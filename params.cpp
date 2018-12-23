@@ -14,7 +14,7 @@
 namespace dauphine
 {
     
-    params::params(double dt, double dx, double maturity, double spot, std::vector<double> boundaries)
+    params::params(double dt, double dx, double maturity, double spot,double theta,std::vector<double> boundaries)
     : m_dt(dt), m_dx(dx), m_maturity(maturity),m_spot(spot),m_theta(theta), m_spot_boundaries(boundaries)
     {
     }
@@ -22,21 +22,37 @@ namespace dauphine
     params::~params()
     {
     }
-    double params::get_maturity() const {
+    double params::get_maturity() const
+    {
         return m_maturity;
     }
-    double params::get_dt() const {
+    double params::get_dt() const
+    {
         return m_dt;
     }
-    double params::get_dx() const {
+    double params::get_dx() const
+    {
         return m_dx;
     }
-    double params::get_spot() const {
+    double params::get_spot() const
+    {
         return m_spot;
     }
-    double params::get_theta() const {
+    double params::get_theta() const
+    {
         return m_theta;
     }
     
+  //  function::new_function(double(*f)(std::vector<double>))
+  //  : m_f(f)
+  //  {
+  /*  }
+    double function::function_operator(std::vector<double> arguments)
+    {
+        return m_f(arguments);
+    }
     
+    function::~new_function()
+    {
+    } */
 }
