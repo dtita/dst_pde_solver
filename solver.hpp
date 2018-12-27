@@ -14,6 +14,7 @@ namespace dauphine
 		double get_mesh_dx() const;
 		double get_mesh_spot() const;
 		std::vector<double> spot_vector();
+        
 		std::vector<double> get_mesh_spot_boundaries() const;
 		~mesh();
 	private:
@@ -48,8 +49,9 @@ namespace dauphine
     std::vector<double> up_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments);
     std::vector<double> sub_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments);
     std::vector<double> diag_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments);
-    void tridiag_algorithm(const std::vector<double>& a,const std::vector<double>& b,const std::vector<double>& c,const std::vector<double>& d,std::vector<double>& f);
-    
+    //std::vector<double>spot_vector_bis(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments);
+   // void tridiag_algorithm(const std::vector<double>& a,const std::vector<double>& b,const std::vector<double>& c,const std::vector<double>& d,std::vector<double>& f);
+    std::vector<double> tridiagonal_solver(std::vector<double> & a, std::vector<double> & b, std::vector<double> & c, std::vector<double> & f);
 }
 
 #endif

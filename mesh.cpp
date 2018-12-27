@@ -15,8 +15,8 @@
 
 namespace dauphine
 {
-    Mesh::Mesh(double dt, double dx,double maturity, double spot, std::vector<double> spot_boundaries, std::vector<double> boundaries)
-    : m_spot_boundaries(boundaries),p(dt,dx,maturity,spot,spot_boundaries)
+    Mesh::Mesh(double dt, double dx,double maturity, double spot,double theta, std::vector<double> spot_boundaries, std::vector<double> boundaries)
+    : m_spot_boundaries(boundaries),p(dt,dx,maturity,spot,theta,spot_boundaries)
     {
     }
     

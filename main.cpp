@@ -35,7 +35,7 @@ namespace dauphine
 		double maturity=1.;
 		double mesh_up_boundaries=300.;
 		double mesh_down_boundaries=20.;
-		double theta = 1.0;
+		double theta = 0.5;
 
 		std::vector<double> arguments(number_arguments);
 		arguments[0] = spot;
@@ -53,23 +53,25 @@ namespace dauphine
 		initial_function up_boundaries(boundaries_up);
 		initial_function down_boundaries(boundaries_down);
 
-
-		mesh m(1.,1,1.,100.,mesh_boundaries);
+        
+        mesh m(1.,1,1.,100.,mesh_boundaries);
+        //mesh m(1.,1,1.,100.,mesh_boundaries);
 
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
         
-        std::cout <<"Price: "<<result[81] << std::endl;
+        std::cout <<"Price: "<<result[80] << std::endl;
         
         //std::vector<double> col=a_vector(1,10);
         
-        for (std::size_t i = 0; i < result.size(); ++i)
+        for (std::size_t i = 0; i <= result.size(); ++i)
         {
-            std::cout << i<<"-"<<result[i] << std::endl;
+            std::cout << i<<": "<<result[i] << std::endl;
         }
-        
         
 	}
 }
+
+
 int main(int argc, char* argv[])
 {
 	std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.2,1,true) << std::endl;
