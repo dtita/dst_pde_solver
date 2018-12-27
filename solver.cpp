@@ -34,8 +34,8 @@ namespace dauphine
 
 	std::vector<double> mesh::spot_vector() {
 		int size = floor((m_spot_boundaries[0] - m_spot_boundaries[1]) / m_dx)+1;
-		std::vector<double> result(size);
-		for (std::size_t i = 0; i < result.size(); ++i)
+		std::vector<double> result(size-1);
+		for (std::size_t i = 0; i <= result.size(); ++i)
 		{
 			result[i] =log(m_spot_boundaries[1]+i*m_dx);
 		}
@@ -94,13 +94,13 @@ namespace dauphine
 	// ici je compute le vecteur à la maturité pour avoir le prix à matu et pouvoir faire backward, donc c'est juste appliqué le payoff pour le spot
 	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
 		std::vector<double> result=m.spot_vector();
-		for (std::size_t i = 0; i < result.size(); i++) {
+		for (std::size_t i = 0; i <= result.size(); i++) {
 			arguments[0] = (exp(result[i]));
 			if (payoff.function_operator(arguments) == 0) {
 				result[i] = 0;
 			}
 			else {
-				result[i] = (payoff.function_operator(arguments));
+				result[i] = payoff.function_operator(arguments);
 			}
 		}
 		return result;
@@ -168,16 +168,35 @@ namespace dauphine
     
     // AUTRE METHODE - TEST
     
+   /* std::vector<double> spot_vector_bis(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
+    {
+        double down=log(arguments[0])-5.0*vol.function_operator(arguments)*sqrt(arguments[0]);
+        double up=log(arguments[0])+5.0*vol.function_operator(arguments)*sqrt(arguments[0]);
+        
+        int size = floor((up - down) / m_dx)+1;
+        std::vector<double> result(size-1);
+        for (std::size_t i = 0; i <= result.size(); ++i)
+        {
+            result[i] =log(m_spot_boundaries[1]+i*m_dx);
+        }
+        return result;
+        
+    } */
+    
+    
     std::vector<double> diag_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
     {
         std::vector<double> a=m.spot_vector();
-        int size = a.size()-1;
+        int size = a.size();
         std::vector<double> result(size,0.0);
         result[0] =1.0;
         result[size] =1.0;
         for (std::size_t i = 1; i < size; ++i)
         {
-            result[i] =(1.0 / m.get_mesh_dt()) + (rate.function_operator(arguments)*arguments[4])+(1.0/(m.get_mesh_dx()*m.get_mesh_dx()))*arguments[4]*pow(vol.function_operator(arguments),2);
+          //  result[i] =((1.0 / m.get_mesh_dt()) + (rate.function_operator(arguments)*arguments[4])+(1.0/(m.get_mesh_dx()*m.get_mesh_dx()))*arguments[4]*pow(vol.function_operator(arguments),2));
+            result[i]=1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+rate.function_operator(arguments));
+        
+        
         }
         return result;
     }
@@ -186,13 +205,15 @@ namespace dauphine
     std::vector<double> sub_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
     {
         std::vector<double> a=m.spot_vector();
-        int size = a.size()-2;
+        int size = a.size()-1;
         std::vector<double> result(size,0.0);
         //result[0] =1.0;
         result[size] =0.0;
         for (std::size_t i = 0; i < size; ++i)
         {
-            result[i] =(-1.0 / 2.0) * (arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()))*pow(vol.function_operator(arguments), 2) - (1.0 / (4.0 * m.get_mesh_dx()))*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments));
+            //result[i] =((-1.0 / 2.0) * (arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()))*pow(vol.function_operator(arguments), 2) - (1.0 / (4.0 * m.get_mesh_dx()))*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)));
+            result[i]=-0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
+            
         }
         return result;
     }
@@ -201,18 +222,21 @@ namespace dauphine
     std::vector<double> up_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
     {
         std::vector<double> a=m.spot_vector();
-        int size = a.size()-2;
+        int size = a.size()-1;
         std::vector<double> result(size,0.0);
         result[0] =0.0;
-        result[1] =0.0;
-        for (std::size_t i = 2; i < size+1; ++i)
+        //result[1] =0.0;
+        for (std::size_t i = 1; i < size+1; ++i)
         {
-            result[i] =(-1.0 / 2.0) * (arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()))*pow(vol.function_operator(arguments), 2) + (1.0 / (4.0 * m.get_mesh_dx()))*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments));
+           // result[i] =((-1.0 / 2.0) * (arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()))*pow(vol.function_operator(arguments), 2) + (1.0 / (4.0 * m.get_mesh_dx()))*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)));
+            
+        result[i]=0.5*arguments[4]*m.get_mesh_dt()*((-pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
         }
         return result;
     }
 
-   
+    
+  /*
     void tridiag_algorithm(const std::vector<double>& a,
                           const std::vector<double>& b,
                           const std::vector<double>& c,
@@ -242,55 +266,85 @@ namespace dauphine
         }
         
         // This is the reverse sweep, used to update the solution vector f
-        for (int i=N-1; i-- > 0; )
+        for (long i=N-1; i-- > 0; )
         {
             f[i] = d_star[i] - c_star[i] * d[i+1];
         }
+    } */
+    
+    
+    // Triadig algo qui fonctionne !
+    std::vector<double> tridiagonal_solver(std::vector<double> & a, std::vector<double> & b, std::vector<double> & c, std::vector<double> & f)
+    {
+        
+        int n = f.size();
+        std::vector<double> x(n);
+        
+        for(int i=1; i<n; i++){
+            
+            double m = a[i-1]/b[i-1];
+            b[i] -= m*c[i-1];
+            f[i] -= m*f[i-1];
+        }
+        // solve for last x value
+        x[n-1] = f[n-1]/b[n-1];
+        
+        // solve for remaining x values by back substitution
+        for(int i=n-2; i >= 0; i--)
+            x[i] = (f[i]- c[i]*x[i+1])/b[i];
+        
+        return x;
+        
     }
+    
     
    std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff)
     {
         
-        std::vector<double> f=initial_price_vector(m, rate, vol, arguments, payoff);
-        int N=f.size();
+       std::vector<double> f=initial_price_vector(m, rate, vol, arguments, payoff);
+        
+        long N=f.size();
         std::vector<double> d(N, 0.0);
-        //std::vector<double> col_up(column_up(m, rate, vol, arguments, payoff, ini_price));
+        
         double dt = m.get_mesh_dt();
-        //std::vector<double> result2 = col_up;
-        
+
         int nb_step =floor( arguments[1] / dt);
-        //std::vector<double> result1(col_up.size());
-        
+    
         std::vector<double> arg=arguments;
-        arg[4] = arguments[4] - 1;
+        arg[4] = arguments[4] - 1; //theta-1
         
-        for (int i = 1; i < nb_step; i++)
+        //Coeffs de la Matrice
+        std::vector<double> a=sub_vector(m,rate,vol,arguments);
+        std::vector<double> b=diag_vector(m,rate,vol,arguments);
+        std::vector<double> c=up_vector(m,rate,vol,arguments);
+        
+        for (long i=1; i<N; i++)
+        {
+            d[i] = c[i+1]*f[i+1]+b[i]*f[i]+a[i-1]*f[i-1];
+            
+        }
+
+        
+        
+        for (int i = 0; i <nb_step ; i++)
         //for (int i=nb_step; i-- > 0; )
         {
-            // Fill in the current time step vector d
             
-            std::vector<double> a=sub_vector(m,rate,vol,arguments);
-            std::vector<double> b=diag_vector(m,rate,vol,arguments);
-            std::vector<double> c=up_vector(m,rate,vol,arguments);
-            
-            for (int i=1; i<N-1; i++)
+          /* for (long i=1; i<N; i++)
             {
-                d[i] = c[i+1]*f[i+1]+b[i]*f[i] + a[i-1]*f[i-1];
+                d[i] = c[i+1]*f[i+1]+b[i]*f[i]+a[i-1]*f[i-1];
                 
-            }
+            } */
+        
+            //Condition aux bords
             
+            d[N]=arguments[0];
+            d[0]=0;
             
             // Now we solve the tridiagonal system
-           tridiag_algorithm(sub_vector(m,rate,vol,arg), diag_vector(m,rate,vol,arg), up_vector(m,rate,vol,arg), d, f);
-           arguments[1] = arguments[1] - m.get_mesh_dt();
-           arg[1] = arguments[1] - m.get_mesh_dt();
-
-            //return c;
-            //f=initial_price_vector(m, rate, vol, arguments, payoff);
-           
-            //arguments[1] = arguments[1] - m.get_mesh_dt();
-            //result1=(price_vector(m, rate, vol, arguments, payoff, result2));
-            //result2 = column_up(m,rate,vol,arguments,payoff,result1);
+            f=tridiagonal_solver(a,b,c,d);
+            d=f;
+            
         }
         return f;
     }
