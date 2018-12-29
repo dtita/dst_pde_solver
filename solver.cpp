@@ -168,22 +168,6 @@ namespace dauphine
     
     // AUTRE METHODE - TEST
     
-   /* std::vector<double> spot_vector_bis(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
-    {
-        double down=log(arguments[0])-5.0*vol.function_operator(arguments)*sqrt(arguments[0]);
-        double up=log(arguments[0])+5.0*vol.function_operator(arguments)*sqrt(arguments[0]);
-        
-        int size = floor((up - down) / m_dx)+1;
-        std::vector<double> result(size-1);
-        for (std::size_t i = 0; i <= result.size(); ++i)
-        {
-            result[i] =log(m_spot_boundaries[1]+i*m_dx);
-        }
-        return result;
-        
-    } */
-    
-    
     std::vector<double> diag_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
     {
         std::vector<double> a=m.spot_vector();
@@ -193,7 +177,6 @@ namespace dauphine
         result[size] =1.0;
         for (std::size_t i = 1; i < size; ++i)
         {
-          //  result[i] =((1.0 / m.get_mesh_dt()) + (rate.function_operator(arguments)*arguments[4])+(1.0/(m.get_mesh_dx()*m.get_mesh_dx()))*arguments[4]*pow(vol.function_operator(arguments),2));
             result[i]=1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+rate.function_operator(arguments));
         
         
@@ -211,7 +194,6 @@ namespace dauphine
         result[size] =0.0;
         for (std::size_t i = 0; i < size; ++i)
         {
-            //result[i] =((-1.0 / 2.0) * (arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()))*pow(vol.function_operator(arguments), 2) - (1.0 / (4.0 * m.get_mesh_dx()))*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)));
             result[i]=-0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
             
         }
@@ -228,49 +210,11 @@ namespace dauphine
         //result[1] =0.0;
         for (std::size_t i = 1; i < size+1; ++i)
         {
-           // result[i] =((-1.0 / 2.0) * (arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()))*pow(vol.function_operator(arguments), 2) + (1.0 / (4.0 * m.get_mesh_dx()))*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)));
             
         result[i]=0.5*arguments[4]*m.get_mesh_dt()*((-pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
         }
         return result;
     }
-
-    
-  /*
-    void tridiag_algorithm(const std::vector<double>& a,
-                          const std::vector<double>& b,
-                          const std::vector<double>& c,
-                          const std::vector<double>& d,
-                          std::vector<double>& f)
-    {
-        size_t N = d.size();
-        
-        // Create the temporary vectors
-        // Note that this is inefficient as it is possible to call
-        // this function many times. A better implementation would
-        // pass these temporary matrices by non-const reference to
-        // save excess allocation and deallocation
-        std::vector<double> c_star(N, 0.0);
-        std::vector<double> d_star(N, 0.0);
-        
-        // This updates the coefficients in the first row
-        // Note that we should be checking for division by zero here
-        c_star[0] = c[0] / b[0];
-        d_star[0] = d[0] / b[0];
-        
-        // Create the c_star and d_star coefficients in the forward sweep
-        for (int i=1; i<N; i++) {
-            double m = 1.0 / (b[i] - a[i] * c_star[i-1]);
-            c_star[i] = c[i] * m;
-            d_star[i] = (d[i] - a[i] * d_star[i-1]) * m;
-        }
-        
-        // This is the reverse sweep, used to update the solution vector f
-        for (long i=N-1; i-- > 0; )
-        {
-            f[i] = d_star[i] - c_star[i] * d[i+1];
-        }
-    } */
     
     
     // Triadig algo qui fonctionne !
@@ -314,36 +258,39 @@ namespace dauphine
         arg[4] = arguments[4] - 1; //theta-1
         
         //Coeffs de la Matrice
-        std::vector<double> a=sub_vector(m,rate,vol,arguments);
-        std::vector<double> b=diag_vector(m,rate,vol,arguments);
-        std::vector<double> c=up_vector(m,rate,vol,arguments);
+        std::vector<double> a_1=sub_vector(m,rate,vol,arg); //a(theta-1)
+        std::vector<double> b_1=diag_vector(m,rate,vol,arg); //b(theta-1)
+        std::vector<double> c_1=up_vector(m,rate,vol,arg); //c(theta-1)
         
-        for (long i=1; i<N; i++)
+        std::vector<double> a=sub_vector(m,rate,vol,arguments); //a(theta)
+        std::vector<double> b=diag_vector(m,rate,vol,arguments); //b(theta)
+        std::vector<double> c=up_vector(m,rate,vol,arguments); //c(theta)
+        
+        
+        // Creation 2nd membre
+       /* for (long i=1; i<N; i++)
         {
             d[i] = c[i+1]*f[i+1]+b[i]*f[i]+a[i-1]*f[i-1];
             
-        }
+        } */
 
-        
-        
         for (int i = 0; i <nb_step ; i++)
-        //for (int i=nb_step; i-- > 0; )
+  
         {
+            // Creation 2nd membre
             
-          /* for (long i=1; i<N; i++)
+            for (long i=1; i<N; i++)
             {
                 d[i] = c[i+1]*f[i+1]+b[i]*f[i]+a[i-1]*f[i-1];
                 
-            } */
-        
-            //Condition aux bords
-            
-            d[N]=arguments[0];
+            }
+            //Condition aux bords (Test pour un call)
+            d[N]=arguments[2]; //Smax
             d[0]=0;
             
             // Now we solve the tridiagonal system
-            f=tridiagonal_solver(a,b,c,d);
-            d=f;
+            f=tridiagonal_solver(a_1,b_1,c_1,d);
+            //d=f;
             
         }
         return f;
