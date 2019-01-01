@@ -297,66 +297,7 @@ namespace dauphine
     }
   
 
-/*      -----TEST - A sous forme de matrice    
 
-// Création d'une matrice(n,m)
-
-	double **ZeroMatrix(int n, int m)
-		{
-   		 double **result = (double **) malloc(n * sizeof(double*));
-    		for (int row = 0; row < n; row++)
-       		 result[row] = (double *) calloc(m , sizeof(double));
-    		return result;
-		}
-
-
-// Création de la matrice A (avec les coeffs et conditions aux bords)          taille de A ????
-
- 	double **A(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
-	{
-	std::vector<double> a=m.spot_vector();
-        int size = a.size();
-
-	  double **result = ZeroMatrix(size+1, size-1);
-    		
-		for (int i = 0; i < size+1; i++) {
-		for (int j=0; j<size-1 ;j++) { 
-
-       		 if (i == 0 || i == dim - 1) 
-		 {
-           	 result[i][j] = 1;            // conditions aux bords    - quelle valeur ??
-       		 } 
-		
-		else if(i == j) 
-		{
-           	 result[i][j] = 1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+rate.function_operator(arguments));        // beta sur la diagonale 
-       		} 
-
-
-		else if(i == (j-1)) 
-		{
-           	 result[i][j] = ((-1.0 / 2.0) * (arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()))*pow(vol.function_operator(arguments), 2) + (1.0 / (4.0 * m.get_mesh_dx()))*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)));    //updiagonale 
-       		} 
-
-
-		else if(i == (j+1)) 
-		{
-           	 result[i][j] = -0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));     //subdiagonale 
-       		} 
-
-
-	}
-    }
-    return result;
-}
-
-
-
-
-// Inversion de la matrice           <<>> cin pour paramètres entrés par l utilisateur (cf theta) ?
-
-
-*/
 
 }
 
