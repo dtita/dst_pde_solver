@@ -274,19 +274,23 @@ namespace dauphine
             
         } */
 
+	
         for (int i = 0; i <nb_step ; i++)
   
         {
-            // Creation 2nd membre
+            // Creation 2nd membre      // ¤¤¤¤¤¤¤¤¤¤¤
             
-            for (long i=1; i<N; i++)
+            for (long j=1; j<N-2; j++)
             {
-                d[i] = c[i+1]*f[i+1]+b[i]*f[i]+a[i-1]*f[i-1];
+                d[j] = c[j]*f[j+1]+b[j]*f[j]+a[j-1]*f[j-1];       // ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
                 
             }
             //Condition aux bords (Test pour un call)
-            d[N]=arguments[2]; //Smax
-            d[0]=0;
+            d[N-1]=f[N-1];
+	    d[0]=f[0];
+
+	    //d[N]=arguments[2]; //Smax
+            //d[0]=0;
             
             // Now we solve the tridiagonal system
             f=tridiagonal_solver(a_1,b_1,c_1,d);

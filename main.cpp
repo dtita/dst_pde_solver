@@ -55,12 +55,12 @@ namespace dauphine
 		initial_function down_boundaries(boundaries_down);
 
         
-        mesh m(1.,0.001,1,100.,mesh_boundaries);
+        mesh m(1.,1,1,100.,mesh_boundaries);
         
 
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
         
-        //std::cout <<"Price: "<<result[50] << std::endl;
+        std::cout <<"Price: "<<result[50] << std::endl;
         
         for (std::size_t i = 0; i <= result.size(); ++i)
         {
