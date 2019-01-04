@@ -79,7 +79,7 @@ namespace dauphine
  
 
 	// les fonctions ici sont pour les calculs des coeffs de la matrice tridiagonale sub = diag dessous, diag = diagonale,
-	// il y a peut �tre une erreur dans les coeffs donc il faudrait qu'on fasse tous les trois le calcul et on compare pour �tre sur
+	// il y a peut être une erreur dans les coeffs donc il faudrait qu'on fasse tous les trois le calcul et on compare pour être sur
 /*	double diag_coeff(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments) {
 		if (arguments[0] == arguments[2]|| arguments[0] == arguments[3])
 		{
@@ -113,7 +113,7 @@ namespace dauphine
     
 
 /*	// une fois que j'ai un vecteur de prix je voudrais le transformer en le mutlipliant par la matrice M(1-theta)
-	// comme �a la partie de droite du probl�me ne sera qu'un vecteur
+	// comme ça la partie de droite du problème ne sera qu'un vecteur
 	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> up_price) {
 		std::vector<double> result = up_price;
 		std::vector<double> result2 = m.spot_vector();
@@ -126,8 +126,8 @@ namespace dauphine
 	}
 
 	//algo used : https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
-	// l� j'utilise en gros l'algo du lien au dessus pour solver, mais je pense qu'il faudrait le refaire � la main pour �tre
-	// sur que �a marche vraiment, dans le wiki y a la d�mo et �a montre comment le faire � la main
+	// là j'utilise en gros l'algo du lien au dessus pour solver, mais je pense qu'il faudrait le refaire à la main pour être
+	// sur que ça marche vraiment, dans le wiki y a la démo et ça montre comment le faire à la main
 	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> col_up) {
 		long size = col_up.size();
 		std::vector<double> result(size);
@@ -156,7 +156,7 @@ namespace dauphine
 	}
 
 
-	//une fois que j'ai l'algo pour solver au dessus je boucle jusqu'� arriver � t=0 et avoir le prix initial
+	//une fois que j'ai l'algo pour solver au dessus je boucle jusqu'à arriver à t=0 et avoir le prix initial
 	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
 		std::vector<double> ini_price(initial_price_vector(m, rate, vol, arguments, payoff));
 		std::vector<double> col_up(column_up(m, rate, vol, arguments, payoff, ini_price));
@@ -174,7 +174,7 @@ namespace dauphine
     
     // AUTRE METHODE - TEST
     
-    // ici je compute le vecteur � la maturit� pour avoir le prix � matu et pouvoir faire backward, donc c'est juste appliqu� le payoff pour le spot
+    // ici je compute le vecteur à la maturité pour avoir le prix à matu et pouvoir faire backward, donc c'est juste appliqué le payoff pour le spot
     
     std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
         //std::vector<double> result=m.spot_vector();
@@ -308,12 +308,25 @@ namespace dauphine
         d[N-1]=f_old[N-1]; //Smax
         d[0]=f_old[0];
         
+
         //return c_1;
         for (int j = 0; j <nb_step ; j++)
+
+        // Creation 2nd membre
+       /* for (long i=1; i<N; i++)
+        {
+            d[i] = c[i+1]*f[i+1]+b[i]*f[i]+a[i-1]*f[i-1];
+            
+        } */
+
+	
+        for (int i = 0; i <nb_step ; i++)
+
   
         {
-            // Creation 2nd membre
+            // Creation 2nd membre      // ¤¤¤¤¤¤¤¤¤¤¤
             
+
             for (long i=1; i<N-2; i++)
             {
                 //d[i] = c_1[i]*f_old[i+1]+b_1[i]*f_old[i]+a_1[i-1]*f_old[i-1];
@@ -324,6 +337,19 @@ namespace dauphine
            /* //Condition aux bords (Test pour un call)
             d[N-1]=f_old[N-1]; //Smax
             d[0]=f_old[0]; */
+
+            for (long j=1; j<N-2; j++)
+            {
+                d[j] = c[j]*f[j+1]+b[j]*f[j]+a[j-1]*f[j-1];       // ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
+                
+            }
+            //Condition aux bords (Test pour un call)
+            d[N-1]=f[N-1];
+	    d[0]=f[0];
+
+	    //d[N]=arguments[2]; //Smax
+            //d[0]=0;
+
             
             // Now we solve the tridiagonal system
             f_new=tridiagonal_solver(a_1,b_1,c_1,d);
@@ -337,66 +363,7 @@ namespace dauphine
     }
   
 
-/*      -----TEST - A sous forme de matrice    
 
-// Cr�ation d'une matrice(n,m)
-
-	double **ZeroMatrix(int n, int m)
-		{
-   		 double **result = (double **) malloc(n * sizeof(double*));
-    		for (int row = 0; row < n; row++)
-       		 result[row] = (double *) calloc(m , sizeof(double));
-    		return result;
-		}
-
-
-// Cr�ation de la matrice A (avec les coeffs et conditions aux bords)          taille de A ????
-
- 	double **A(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
-	{
-	std::vector<double> a=m.spot_vector();
-        int size = a.size();
-
-	  double **result = ZeroMatrix(size+1, size-1);
-    		
-		for (int i = 0; i < size+1; i++) {
-		for (int j=0; j<size-1 ;j++) { 
-
-       		 if (i == 0 || i == dim - 1) 
-		 {
-           	 result[i][j] = 1;            // conditions aux bords    - quelle valeur ??
-       		 } 
-		
-		else if(i == j) 
-		{
-           	 result[i][j] = 1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+rate.function_operator(arguments));        // beta sur la diagonale 
-       		} 
-
-
-		else if(i == (j-1)) 
-		{
-           	 result[i][j] = ((-1.0 / 2.0) * (arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx()))*pow(vol.function_operator(arguments), 2) + (1.0 / (4.0 * m.get_mesh_dx()))*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)));    //updiagonale 
-       		} 
-
-
-		else if(i == (j+1)) 
-		{
-           	 result[i][j] = -0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));     //subdiagonale 
-       		} 
-
-
-	}
-    }
-    return result;
-}
-
-
-
-
-// Inversion de la matrice           <<>> cin pour param�tres entr�s par l utilisateur (cf theta) ?
-
-
-*/
 
 }
 
