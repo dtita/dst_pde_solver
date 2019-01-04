@@ -193,75 +193,73 @@ namespace dauphine
         return result;
     }
     
-    std::vector<double> diag_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
-    {
-        //std::vector<double> a=m.spot_vector();
-        std::vector<double> a=m.spot_vect;
-        long size = a.size();
-        std::vector<double> result(size,0.0);
-        //result[0] =1.0;
-        //result[size] =1.0;
-        for (std::size_t i = 2; i < size-1; ++i)
-        {
-            //result[i]=1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+rate.function_operator(arguments));
-            
-            result[i]=1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.d_x[i],2))+rate.function_operator(arguments));
-            
-            
-        }
-        return result;
-    }
+	std::vector<double> diag_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments)
+	{
+		//std::vector<double> a=m.spot_vector();
+		std::vector<double> a = m.spot_vect;
+		long size = a.size();
+		std::vector<double> result(size, 0.0);
+		result[0] = 1.0;
+		result[size - 1] = 1.0;
+		for (std::size_t i = 1; i < size - 1; ++i)
+		{
+			//result[i]=1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+rate.function_operator(arguments));
+
+			result[i] = 1.0 + arguments[4] * m.get_mesh_dt()*((pow(vol.function_operator(arguments), 2) / pow(m.d_x[i], 2)) + rate.function_operator(arguments));
+
+		}
+		return result;
+	}
+
+
+	std::vector<double> sub_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments)
+	{
+		//std::vector<double> a=m.spot_vector();
+		std::vector<double> a = m.spot_vect;
+		long size = a.size();
+		std::vector<double> result(size, 0.0);
+		result[size - 1] = 0;
+		result[0] = 0;
+		for (std::size_t i = 1; i < size - 1; ++i)
+		{
+			//result[i]=-0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
+
+			result[i] = -0.5*arguments[4] * m.get_mesh_dt()*((pow(vol.function_operator(arguments), 2) / pow(m.d_x[i], 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x[i])));
+
+		}
+		return result;
+	}
+
+
+	std::vector<double> up_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments)
+	{
+		//std::vector<double> a=m.spot_vector();
+		std::vector<double> a = m.spot_vect;
+		long size = a.size();
+		std::vector<double> result(size, 0.0);
+
+		result[0] = 0.0;
+		result[size - 1] = 0.0;
+		for (std::size_t i = 1; i < size - 1; ++i)
+		{
+
+			//result[i]=0.5*arguments[4]*m.get_mesh_dt()*((-pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
+			result[i] = 0.5*arguments[4] * m.get_mesh_dt()*((-pow(vol.function_operator(arguments), 2) / pow(m.d_x[i], 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x[i])));
+		}
+		return result;
+	}
     
     
-    std::vector<double> sub_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
-    {
-        //std::vector<double> a=m.spot_vector();
-        std::vector<double> a=m.spot_vect;
-        long size = a.size()-1;
-        std::vector<double> result(size,0.0);
-        //result[0] =1.0;
-        result[0] =1.0;
-        for (std::size_t i = 1; i < size-1; ++i)
-        {
-            //result[i]=-0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
-            
-            result[i]=-0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.d_x[i],2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.d_x[i])));
-            
-        }
-        return result;
-    }
-    
-    
-    std::vector<double> up_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
-    {
-        //std::vector<double> a=m.spot_vector();
-        std::vector<double> a=m.spot_vect;
-        long size = a.size()-1;
-        std::vector<double> result(size,0.0);
-        
-        //result[1] =0.0;
-        for (std::size_t i = 2; i < size-1; ++i)
-        {
-            
-            //result[i]=0.5*arguments[4]*m.get_mesh_dt()*((-pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
-            
-            result[i]=0.5*arguments[4]*m.get_mesh_dt()*((-pow(vol.function_operator(arguments),2)/pow(m.d_x[i],2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.d_x[i])));
-        }
-        result[size-1] =1.0;
-        return result;
-    }
-    
-    
-    // Triadig algo qui fonctionne !
+    // Triadiag algo qui fonctionne !
     std::vector<double> tridiagonal_solver(std::vector<double>  a,  std::vector<double>  b, std::vector<double>  c, std::vector<double>  f)
     {
         
         long n = f.size();
         std::vector<double> x(n);
-        
+		x[0] = f[0];
         for(int i=1; i<n; i++){
             
-            double m = a[i-1]/b[i-1];
+            double m = a[i]/b[i-1];
             b[i] -= m*c[i-1];
             f[i] -= m*f[i-1];
         }
@@ -314,10 +312,10 @@ namespace dauphine
         {
             // Creation 2nd membre
             
-            for (long i=1; i<N-2; i++)
+            for (long i=1; i<N-1; i++)
             {
                 //d[i] = c_1[i]*f_old[i+1]+b_1[i]*f_old[i]+a_1[i-1]*f_old[i-1];
-                d[i] = c[i]*f_old[i+1]+b[i]*f_old[i]+a[i-1]*f_old[i-1];
+                d[i] = c_1[i]*f_old[i+1]+b_1[i]*f_old[i]+a_1[i]*f_old[i-1];
                 
             }
             
@@ -326,11 +324,9 @@ namespace dauphine
              d[0]=f_old[0]; */
             
             // Now we solve the tridiagonal system
-            f_new=tridiagonal_solver(a_1,b_1,c_1,d);
+            f_new=tridiagonal_solver(a,b,c,d);
             f_old=f_new;
-            
-            
-            
+          
         }
         return f_old;
         return f_new;

@@ -8,13 +8,15 @@ namespace dauphine
 	class mesh {
 	public:
 		//mesh();
-		mesh(double dt, double dx,double maturity, double spot, std::vector<double> spot_boundaries);
+		mesh(double dt, double dx, double maturity, double spot, std::vector<double> spot_boundaries);
 		double get_mesh_dt() const;
 		double get_mesh_maturity() const;
 		double get_mesh_dx() const;
 		double get_mesh_spot() const;
 		std::vector<double> spot_vector();
-        
+		std::vector<double> spot_vect;
+		std::vector<double> d_x;
+
 		std::vector<double> get_mesh_spot_boundaries() const;
 		~mesh();
 	private:
@@ -23,6 +25,7 @@ namespace dauphine
 		double m_maturity;
 		double m_spot;
 		std::vector<double> m_spot_boundaries;
+
 	};
 
 
@@ -43,7 +46,7 @@ namespace dauphine
 	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff, std::vector<double> col_up);
 	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff);
 
-  
+
     // Autre methode - TEST
     
     std::vector<double> up_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments);
