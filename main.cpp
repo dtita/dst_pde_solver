@@ -59,7 +59,6 @@ namespace dauphine
         
         
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
-        //int indice_result=floor((1/m.get_mesh_dx())*((arguments[0]-mesh_boundaries[1])*((1+((365*arguments[1])/pow((arguments[0]-mesh_boundaries[1]),2))))))+1;
         
         //std::cout <<"Indice: "<<indice_result << std::endl;
         std::cout <<"Price: "<<result[500] << std::endl;
