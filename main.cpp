@@ -16,10 +16,10 @@ namespace dauphine
 		return std::max(arguments[0]-100,0.);
 	}
 	double rate_function(std::vector<double> arguments) {
-		return 0.05/365;
+		return 0.0;
 	}
 	double volatility_function(std::vector<double> arguments) {
-		return 0.;
+		return 0.2;
 	}
 	double boundaries_up(std::vector<double> arguments) {
 		return  std::max(arguments[2] - 100, 0.);
@@ -33,7 +33,7 @@ namespace dauphine
 		// make sure the arguments of the payoff are properly defined
 		int number_arguments(5);
 		double spot=100.;
-		double maturity=1;
+		double maturity=1.;
 		double mesh_up_boundaries=150.;
 		double mesh_down_boundaries=50.;
 		double theta = 0.5;
@@ -55,14 +55,23 @@ namespace dauphine
 		initial_function down_boundaries(boundaries_down);
 
         
-        mesh m(1.,1,1,100.,mesh_boundaries);
+
+        mesh m(1.,0.1,1.,100.,mesh_boundaries);
         
 
+      
+
+        
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
         
-        std::cout <<"Price: "<<result[50] << std::endl;
+
+        //std::cout <<"Indice: "<<indice_result << std::endl;
+        std::cout <<"Price: "<<result[500] << std::endl;
+
         
-        for (std::size_t i = 0; i <= result.size(); ++i)
+
+        
+        for (std::size_t i = 0; i < result.size(); ++i)
         {
             std::cout << i<<": "<<result[i] << std::endl;
         }
@@ -73,7 +82,7 @@ namespace dauphine
 
 int main(int argc, char* argv[])
 {
-	std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.2,1,true) << std::endl;
+    std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.2,1.0,true) << std::endl;
 	dauphine::test();
     return 0;
 }

@@ -9,6 +9,25 @@ namespace dauphine
 	mesh::mesh(double dt, double dx, double maturity, double spot, std::vector<double> boundaries)
 		: m_dt(dt), m_dx(dx), m_maturity(maturity),m_spot(spot), m_spot_boundaries(boundaries)
 	{
+        double size = floor((m_spot_boundaries[0] - m_spot_boundaries[1]) / m_dx)+1;
+        std::vector<double> result(size);
+        std::vector<double> result2(size-1);
+        
+        for (std::size_t i = 0; i < size; ++i)
+        {
+            result[i] =m_spot_boundaries[1]+i*m_dx;
+            
+        }
+        spot_vect=result;
+        
+        for (std::size_t i = 0; i < size-1; ++i)
+        {
+            result2[i] =log(spot_vect[i+1])-log(spot_vect[i]);
+            
+        }
+        d_x=result2;
+        
+        
 	}
 
 	mesh::~mesh()
@@ -18,7 +37,7 @@ namespace dauphine
 		return m_maturity;
 	}
 	double mesh::get_mesh_dt() const {
-		return m_dt/365;
+		return m_dt/365.0;
 	}
 	double mesh::get_mesh_dx() const {
 		return m_dx;
@@ -33,11 +52,12 @@ namespace dauphine
 
 
 	std::vector<double> mesh::spot_vector() {
-		int size = floor((m_spot_boundaries[0] - m_spot_boundaries[1]) / m_dx)+1;
+		double size = floor((m_spot_boundaries[0] - m_spot_boundaries[1]) / m_dx)+1;
 		std::vector<double> result(size-1);
-		for (std::size_t i = 0; i <= result.size(); ++i)
+		for (std::size_t i = 0; i < result.size(); ++i)
 		{
 			result[i] =log(m_spot_boundaries[1]+i*m_dx);
+            
 		}
 		return result;
 	}
@@ -59,8 +79,8 @@ namespace dauphine
  
 
 	// les fonctions ici sont pour les calculs des coeffs de la matrice tridiagonale sub = diag dessous, diag = diagonale,
-	// il y a peut être une erreur dans les coeffs donc il faudrait qu'on fasse tous les trois le calcul et on compare pour être sur
-	double diag_coeff(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments) {
+	// il y a peut Ãªtre une erreur dans les coeffs donc il faudrait qu'on fasse tous les trois le calcul et on compare pour Ãªtre sur
+/*	double diag_coeff(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments) {
 		if (arguments[0] == arguments[2]|| arguments[0] == arguments[3])
 		{
 			return 1.0;
@@ -89,25 +109,11 @@ namespace dauphine
 			return -1.0 / 2.0 * arguments[4] / (m.get_mesh_dx()*m.get_mesh_dx())*pow(vol.function_operator(arguments), 2) + 1.0 / (4.0 * m.get_mesh_dx())*arguments[4] * (pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments));
 		}
 	}
-
+*/
     
-	// ici je compute le vecteur à la maturité pour avoir le prix à matu et pouvoir faire backward, donc c'est juste appliqué le payoff pour le spot
-	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
-		std::vector<double> result=m.spot_vector();
-		for (std::size_t i = 0; i <= result.size(); i++) {
-			arguments[0] = (exp(result[i]));
-			if (payoff.function_operator(arguments) == 0) {
-				result[i] = 0;
-			}
-			else {
-				result[i] = payoff.function_operator(arguments);
-			}
-		}
-		return result;
-	}
 
-	// une fois que j'ai un vecteur de prix je voudrais le transformer en le mutlipliant par la matrice M(1-theta)
-	// comme ça la partie de droite du problème ne sera qu'un vecteur
+/*	// une fois que j'ai un vecteur de prix je voudrais le transformer en le mutlipliant par la matrice M(1-theta)
+	// comme Ã§a la partie de droite du problÃ¨me ne sera qu'un vecteur
 	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> up_price) {
 		std::vector<double> result = up_price;
 		std::vector<double> result2 = m.spot_vector();
@@ -120,10 +126,10 @@ namespace dauphine
 	}
 
 	//algo used : https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm
-	// là j'utilise en gros l'algo du lien au dessus pour solver, mais je pense qu'il faudrait le refaire à la main pour être
-	// sur que ça marche vraiment, dans le wiki y a la démo et ça montre comment le faire à la main
+	// lÃ  j'utilise en gros l'algo du lien au dessus pour solver, mais je pense qu'il faudrait le refaire Ã  la main pour Ãªtre
+	// sur que Ã§a marche vraiment, dans le wiki y a la dÃ©mo et Ã§a montre comment le faire Ã  la main
 	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> col_up) {
-		int size = col_up.size();
+		long size = col_up.size();
 		std::vector<double> result(size);
 		double W = 0;
 		std::vector<double> arguments_up = arguments;
@@ -150,7 +156,7 @@ namespace dauphine
 	}
 
 
-/*	//une fois que j'ai l'algo pour solver au dessus je boucle jusqu'à arriver à t=0 et avoir le prix initial
+	//une fois que j'ai l'algo pour solver au dessus je boucle jusqu'Ã  arriver Ã  t=0 et avoir le prix initial
 	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
 		std::vector<double> ini_price(initial_price_vector(m, rate, vol, arguments, payoff));
 		std::vector<double> col_up(column_up(m, rate, vol, arguments, payoff, ini_price));
@@ -168,16 +174,38 @@ namespace dauphine
     
     // AUTRE METHODE - TEST
     
+    // ici je compute le vecteur Ã  la maturitÃ© pour avoir le prix Ã  matu et pouvoir faire backward, donc c'est juste appliquÃ© le payoff pour le spot
+    
+    std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
+        //std::vector<double> result=m.spot_vector();
+        std::vector<double> result=m.spot_vect;
+        for (std::size_t i = 0; i < result.size(); i++) {
+            //arguments[0] = (exp(result[i]));
+            arguments[0] = result[i];
+            if (payoff.function_operator(arguments) == 0) {
+                result[i] = 0;
+            }
+            else {
+                result[i] = payoff.function_operator(arguments);
+                
+            }
+        }
+        return result;
+    }
+    
     std::vector<double> diag_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
     {
-        std::vector<double> a=m.spot_vector();
-        int size = a.size();
+        //std::vector<double> a=m.spot_vector();
+        std::vector<double> a=m.spot_vect;
+        long size = a.size();
         std::vector<double> result(size,0.0);
-        result[0] =1.0;
-        result[size] =1.0;
-        for (std::size_t i = 1; i < size; ++i)
+        //result[0] =1.0;
+        //result[size] =1.0;
+        for (std::size_t i = 2; i < size-1; ++i)
         {
-            result[i]=1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+rate.function_operator(arguments));
+            //result[i]=1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+rate.function_operator(arguments));
+            
+            result[i]=1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.d_x[i],2))+rate.function_operator(arguments));
         
         
         }
@@ -187,14 +215,17 @@ namespace dauphine
     
     std::vector<double> sub_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
     {
-        std::vector<double> a=m.spot_vector();
-        int size = a.size()-1;
+        //std::vector<double> a=m.spot_vector();
+        std::vector<double> a=m.spot_vect;
+        long size = a.size()-1;
         std::vector<double> result(size,0.0);
         //result[0] =1.0;
-        result[size] =0.0;
-        for (std::size_t i = 0; i < size; ++i)
+        result[0] =1.0;
+        for (std::size_t i = 1; i < size-1; ++i)
         {
-            result[i]=-0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
+            //result[i]=-0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
+            
+            result[i]=-0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.d_x[i],2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.d_x[i])));
             
         }
         return result;
@@ -203,25 +234,29 @@ namespace dauphine
     
     std::vector<double> up_vector(mesh m, initial_function rate,initial_function vol, std::vector<double> arguments)
     {
-        std::vector<double> a=m.spot_vector();
-        int size = a.size()-1;
+        //std::vector<double> a=m.spot_vector();
+        std::vector<double> a=m.spot_vect;
+        long size = a.size()-1;
         std::vector<double> result(size,0.0);
-        result[0] =0.0;
+        
         //result[1] =0.0;
-        for (std::size_t i = 1; i < size+1; ++i)
+        for (std::size_t i = 2; i < size-1; ++i)
         {
             
-        result[i]=0.5*arguments[4]*m.get_mesh_dt()*((-pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
+        //result[i]=0.5*arguments[4]*m.get_mesh_dt()*((-pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
+            
+        result[i]=0.5*arguments[4]*m.get_mesh_dt()*((-pow(vol.function_operator(arguments),2)/pow(m.d_x[i],2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.d_x[i])));
         }
+        result[size-1] =1.0;
         return result;
     }
     
     
     // Triadig algo qui fonctionne !
-    std::vector<double> tridiagonal_solver(std::vector<double> & a, std::vector<double> & b, std::vector<double> & c, std::vector<double> & f)
+    std::vector<double> tridiagonal_solver(std::vector<double>  a,  std::vector<double>  b, std::vector<double>  c, std::vector<double>  f)
     {
         
-        int n = f.size();
+        long n = f.size();
         std::vector<double> x(n);
         
         for(int i=1; i<n; i++){
@@ -240,20 +275,23 @@ namespace dauphine
         return x;
         
     }
-    
+
     
    std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff)
     {
         
-       std::vector<double> f=initial_price_vector(m, rate, vol, arguments, payoff);
+       
+        std::vector<double> f_old=initial_price_vector(m, rate, vol, arguments, payoff);
         
-        long N=f.size();
+        
+        long N=f_old.size();
         std::vector<double> d(N, 0.0);
-        
+        std::vector<double> f_new(N, 0.0);
         double dt = m.get_mesh_dt();
 
         int nb_step =floor( arguments[1] / dt);
-    
+        
+        
         std::vector<double> arg=arguments;
         arg[4] = arguments[4] - 1; //theta-1
         
@@ -266,7 +304,14 @@ namespace dauphine
         std::vector<double> b=diag_vector(m,rate,vol,arguments); //b(theta)
         std::vector<double> c=up_vector(m,rate,vol,arguments); //c(theta)
         
+        //Condition aux bords (Test pour un call)
+        d[N-1]=f_old[N-1]; //Smax
+        d[0]=f_old[0];
         
+
+        //return c_1;
+        for (int j = 0; j <nb_step ; j++)
+
         // Creation 2nd membre
        /* for (long i=1; i<N; i++)
         {
@@ -276,13 +321,26 @@ namespace dauphine
 
 	
         for (int i = 0; i <nb_step ; i++)
+
   
         {
-            // Creation 2nd membre      // ¤¤¤¤¤¤¤¤¤¤¤
+            // Creation 2nd membre      // Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤
             
+
+            for (long i=1; i<N-2; i++)
+            {
+                //d[i] = c_1[i]*f_old[i+1]+b_1[i]*f_old[i]+a_1[i-1]*f_old[i-1];
+                d[i] = c[i]*f_old[i+1]+b[i]*f_old[i]+a[i-1]*f_old[i-1];
+                
+            }
+           
+           /* //Condition aux bords (Test pour un call)
+            d[N-1]=f_old[N-1]; //Smax
+            d[0]=f_old[0]; */
+
             for (long j=1; j<N-2; j++)
             {
-                d[j] = c[j]*f[j+1]+b[j]*f[j]+a[j-1]*f[j-1];       // ¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤
+                d[j] = c[j]*f[j+1]+b[j]*f[j]+a[j-1]*f[j-1];       // Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤Â¤
                 
             }
             //Condition aux bords (Test pour un call)
@@ -291,13 +349,17 @@ namespace dauphine
 
 	    //d[N]=arguments[2]; //Smax
             //d[0]=0;
+
             
             // Now we solve the tridiagonal system
-            f=tridiagonal_solver(a_1,b_1,c_1,d);
-            //d=f;
+            f_new=tridiagonal_solver(a_1,b_1,c_1,d);
+            f_old=f_new;
+            
+            
             
         }
-        return f;
+        return f_old;
+        return f_new;
     }
   
 
