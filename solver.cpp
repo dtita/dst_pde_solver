@@ -257,6 +257,7 @@ namespace dauphine
     {
         
         long n = f.size();
+        
         std::vector<double> x(n);
         
         for(int i=1; i<n; i++){
