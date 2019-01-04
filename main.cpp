@@ -1,9 +1,9 @@
 #include <iostream>
 #include "closed_form.hpp"
 #include "solver.hpp"
-#include "solverT.hpp"
+//#include "solverT.hpp"
 #include "params.hpp"
-#include "mesh.hpp"
+//#include "mesh.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -62,16 +62,16 @@ namespace dauphine
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
         
 
-        //std::cout <<"Indice: "<<indice_result << std::endl;
-        std::cout <<"Price: "<<result[500] << std::endl;
+        ////std::cout <<"Indice: "<<indice_result << std::endl;
+        //std::cout <<"Price: "<<result[500] << std::endl;
 
-        
+        //
 
-        
-        for (std::size_t i = 0; i < result.size(); ++i)
-        {
-            std::cout << i<<": "<<result[i] << std::endl;
-        }
+        //
+        //for (std::size_t i = 0; i < result.size(); ++i)
+        //{
+        //    std::cout << i<<": "<<result[i] << std::endl;
+        //}
         
 	}
 }
@@ -80,6 +80,8 @@ namespace dauphine
 int main(int argc, char* argv[])
 {
     std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.2,1.0,true) << std::endl;
+	std::cout << "Price BS 1D: " << dauphine::bs_price(100, 100, 0.2, 1.0/365, true) << std::endl;
+	std::cout << "Price BS 10D: " << dauphine::bs_price(100, 100, 0.2, 10.0 / 365, true) << std::endl;
 	dauphine::test();
     return 0;
 }
