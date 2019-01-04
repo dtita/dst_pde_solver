@@ -62,6 +62,7 @@ namespace dauphine
       
 
         
+        
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
         
 
