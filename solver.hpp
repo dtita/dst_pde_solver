@@ -13,7 +13,6 @@ namespace dauphine
 		double get_mesh_maturity() const;
 		double get_mesh_dx() const;
 		double get_mesh_spot() const;
-		std::vector<double> spot_vector();
         std::vector<double> spot_vect;
         std::vector<double> d_x;
         
