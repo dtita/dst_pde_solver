@@ -1,7 +1,7 @@
 #include <iostream>
 #include "closed_form.hpp"
 #include "solver.hpp"
-//#include "solverT.hpp"
+#include "solverT.hpp"
 #include "params.hpp"
 //#include "mesh.hpp"
 #include <algorithm>
@@ -19,7 +19,7 @@ namespace dauphine
 		return 0.0;
 	}
 	double volatility_function(std::vector<double> arguments) {
-		return 0.2;
+		return 0.20;
 	}
 	double boundaries_up(std::vector<double> arguments) {
 		return  std::max(arguments[2] - 100, 0.);
@@ -80,6 +80,7 @@ namespace dauphine
 int main(int argc, char* argv[])
 {
     std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.2,1.0,true) << std::endl;
+	std::cout << "Price BS:spot 140 " << dauphine::bs_price(140, 100, 0.2, 1.0, true) << std::endl;
 	std::cout << "Price BS 1D: " << dauphine::bs_price(100, 100, 0.2, 1.0/365, true) << std::endl;
 	std::cout << "Price BS 10D: " << dauphine::bs_price(100, 100, 0.2, 10.0 / 365, true) << std::endl;
 	dauphine::test();
