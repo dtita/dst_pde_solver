@@ -34,9 +34,13 @@ namespace dauphine
     {
         int size = floor((m_spot_boundaries[0] - m_spot_boundaries[1]) / p.get_dx())+1;
         std::vector<double> result(size);
-        for (std::size_t i = 0; i < result.size(); ++i)
+        double log_spot_min = std::log(m_spot_boundaries[0]);   //
+  	double log_spot_max = std::log(m_spot_boundaries[1]);   //
+
+	for (std::size_t i = 0; i < result.size(); ++i)
             {
-                result[i] =log(m_spot_boundaries[1]+i*p.get_dx());
+		result[i] = std::exp(log_spot_min + i * p.get_dx());   // test prof
+                //result[i] =log(m_spot_boundaries[1]+i*p.get_dx());
             }
         return result;
     }
