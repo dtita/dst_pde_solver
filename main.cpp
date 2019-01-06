@@ -47,6 +47,10 @@ namespace dauphine
 		std::vector<double> mesh_boundaries(2);
 		mesh_boundaries[0] = 150.0;
 		mesh_boundaries[1] = 50.0;
+		//mesh_boundaries[0] = std::exp(std::log(spot) - 1.);
+		//mesh_boundaries[1] = std::exp(std::log(spot) + 1.);
+		
+
 
 		initial_function payoff(payoff_function);
 		initial_function rate(rate_function);
@@ -63,7 +67,7 @@ namespace dauphine
         
 
         ////std::cout <<"Indice: "<<indice_result << std::endl;
-        //std::cout <<"Price: "<<result[500] << std::endl;
+        std::cout <<"Price: "<<result[500] << std::endl;
 
         //
 
