@@ -9,21 +9,23 @@ namespace dauphine
 	mesh::mesh(double dt, double dx, double maturity, double spot, std::vector<double> boundaries)
 		: m_dt(dt), m_dx(dx), m_maturity(maturity), m_spot(spot), m_spot_boundaries(boundaries)
 	{
-		double size = floor((m_spot_boundaries[0] - m_spot_boundaries[1]) / m_dx) + 1;
-		std::vector<double> result(size);
-		std::vector<double> result2(size - 1,log(m_dx));
+		std::vector<double> result(dx);
+		std::vector<double> result2(dx-1,0);
+		double log_spot_min = std::log(boundaries[0]);
+		double log_spot_max = std::log(boundaries[1]);
 
-		for (std::size_t i = 0; i < size; ++i)
+		double dlog = (log_spot_max - log_spot_min) /( dx-1);
+
+		for (std::size_t i = 0; i < dx; ++i)
 		{
-			result[i] = m_spot_boundaries[1] + i*m_dx;
-
+			result[i] = std::exp(log_spot_min + i * dlog);
 		}
 		spot_vect = result;
 
-		for (std::size_t i = 0; i < size - 1; ++i)
+		for (std::size_t i = 0; i < dx - 1; ++i)
 		{
-			result2[i] = log(spot_vect[i + 1]) - log(spot_vect[i]);
-
+			//result2[i] = log(spot_vect[i + 1]) - log(spot_vect[i]);
+			result2[i] = dlog;
 		}
 		d_x = result2;
 	

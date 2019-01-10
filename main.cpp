@@ -1,8 +1,8 @@
 #include <iostream>
 #include "closed_form.hpp"
 #include "solver.hpp"
-#include "solverT.hpp"
-#include "params.hpp"
+//#include "solverT.hpp"
+//#include "params.hpp"
 //#include "mesh.hpp"
 #include <algorithm>
 #include <cmath>
@@ -45,10 +45,10 @@ namespace dauphine
 		arguments[3] = mesh_down_boundaries;
 		arguments[4] = theta;
 		std::vector<double> mesh_boundaries(2);
-		mesh_boundaries[0] = 150.0;
-		mesh_boundaries[1] = 50.0;
-		//mesh_boundaries[0] = std::exp(std::log(spot) - 1.);
-		//mesh_boundaries[1] = std::exp(std::log(spot) + 1.);
+		/*mesh_boundaries[0] = 150.0;
+		mesh_boundaries[1] = 50.0;*/
+		mesh_boundaries[0] = std::exp(std::log(spot) - 1.);
+		mesh_boundaries[1] = std::exp(std::log(spot) + 1.);
 		
 
 
@@ -60,7 +60,7 @@ namespace dauphine
 
         
 
-        mesh m(1.,0.1,1.,100.,mesh_boundaries);
+        mesh m(1.,1001,1.,100.,mesh_boundaries);
         
         
 		std::vector<double> result = price_today(m,rate,volatility,arguments,payoff);
