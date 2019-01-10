@@ -23,8 +23,7 @@ namespace dauphine
 		double m_dx;
 		double m_maturity;
 		double m_spot;
-		std::vector<double> m_spot_boundaries;
-        
+		std::vector<double> m_spot_boundaries; 
 	};
 
 
@@ -44,7 +43,7 @@ namespace dauphine
 	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,initial_function payoff);
 	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> up_price);
 //	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff, std::vector<double> col_up);
-	std::vector<double> price_today(double theta, mesh m, initial_function rate, initial_function vol,  initial_function payoff);
+	std::vector<double> price_today(double theta, mesh m, initial_function rate, initial_function vol,  initial_function payoff, bool time_S_dependent);
 
   
     // Autre methode - TEST
