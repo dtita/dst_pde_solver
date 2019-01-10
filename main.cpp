@@ -50,7 +50,7 @@ namespace dauphine
 		//mesh(double dt, double dx, double maturity, double spot, std::vector<double> boundaries, double theta)
         mesh m(1./365.,1001,1.,100.,mesh_boundaries);
         
-		std::vector<double> result = price_today(theta,m,rate,volatility,payoff);
+		std::vector<double> result = price_today(theta,m,rate,volatility,payoff,false);
 		double i = (1001 - 1) / 2; // indice du spot rentré
 		double price = result[i];
 		double delta = (result[i] - result[i-1]) / (m.spot_vect[i] - m.spot_vect[i-1]);

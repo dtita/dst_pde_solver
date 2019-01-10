@@ -25,7 +25,7 @@ namespace dauphine
 
 		for (std::size_t i = 0; i < inter_t; ++i)
 		{
-			result2[inter_t-1-i] = maturity-i*dt;
+			result2[i] = maturity-i*dt;
 		}
 		t_vect = result2;
 	}
@@ -63,7 +63,6 @@ namespace dauphine
 	}
 
 	// AUTRE METHODE - TEST
-
 	// ici je compute le vecteur ‡ la maturitÈ pour avoir le prix ‡ matu et pouvoir faire backward, donc c'est juste appliquÈ le payoff pour le spot
 
 	std::vector<double> initial_price_vector(mesh m, initial_function payoff) {
@@ -153,12 +152,12 @@ namespace dauphine
 	}
 
 
-	std::vector<double> price_today(double theta, mesh m, initial_function rate, initial_function vol,  initial_function payoff)
+	std::vector<double> price_today(double theta, mesh m, initial_function rate, initial_function vol,  initial_function payoff, bool time_S_dependent)
 	{
 		// arguments allow to follow S,t and 
 		std::vector<double> arguments(2);
 		arguments[0] = m.spot_vect[0];
-		arguments[1] = m.t_vect[1];
+		arguments[1] = m.t_vect[0];
 
 		std::vector<double> f_old = initial_price_vector(m, payoff);
 		long N = f_old.size();
@@ -181,16 +180,24 @@ namespace dauphine
 
 		//return c_1;
 		for (int j = 0; j < nb_step; j++)
-		{
+		{	
+			if (time_S_dependent) {
+				std::vector<double> a_1 = sub_vector(m, rate, vol, arguments, theta - 1); //a(theta-1)
+				std::vector<double> b_1 = diag_vector(m, rate, vol, arguments, theta - 1); //b(theta-1)
+				std::vector<double> c_1 = up_vector(m, rate, vol, arguments, theta - 1); //c(theta-1)
+				arguments[1] = m.t_vect[j]; //on modifie le temps pour changer les calculs de rate et taux si besoin
+				std::vector<double> a = sub_vector(m, rate, vol, arguments, theta); //a(theta)
+				std::vector<double> b = diag_vector(m, rate, vol, arguments, theta); //b(theta)
+				std::vector<double> c = up_vector(m, rate, vol, arguments, theta); //c(theta)
+			}
+
 			// Creation 2nd membre
 			d[N - 1] = f_old[N - 1] * exp(-rate.function_operator(arguments)*m.get_mesh_dt());
-
 			for (long i = 1; i < N - 1; i++)
 			{
 				d[i] = c_1[i] * f_old[i + 1] + b_1[i] * f_old[i] + a_1[i] * f_old[i - 1];
 
 			}
-
 			if (j == nb_step - 1) { // I keep the value at the before last step, to compute the theta
 				f_before = f_new;
 			}
