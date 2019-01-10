@@ -22,12 +22,12 @@ namespace dauphine
 	double volatility_function(std::vector<double> arguments) {
 		return 0.20;
 	}
-	double boundaries_up(std::vector<double> arguments) {
-		return  std::max(arguments[2] - 100, 0.);
-	}
-	double boundaries_down(std::vector<double> arguments) {
-		return std::max(arguments[3] - 100, 0.);
-	}
+	//double boundaries_up(std::vector<double> arguments) {
+	//	return  std::max(arguments[2] - 100, 0.);
+	//}
+	//double boundaries_down(std::vector<double> arguments) {
+	//	return std::max(arguments[3] - 100, 0.);
+	//}
 
 	void test()
 	{
@@ -44,18 +44,22 @@ namespace dauphine
 		initial_function payoff(payoff_function);
 		initial_function rate(rate_function);
 		initial_function volatility(volatility_function);
-		initial_function up_boundaries(boundaries_up);
+		//initial_function up_boundaries(boundaries_up);
+		//initial_function down_boundaries(boundaries_down);
 
-		initial_function down_boundaries(boundaries_down);
 		//mesh(double dt, double dx, double maturity, double spot, std::vector<double> boundaries, double theta)
         mesh m(1./365.,1001,1.,100.,mesh_boundaries);
         
-		std::vector<double> result = price_today(m,rate,volatility,theta,payoff);
-        
-
-        ////std::cout <<"Indice: "<<indice_result << std::endl;
-        std::cout <<"Price: "<<result[(1001-1)/2] << std::endl;
-        
+		std::vector<double> result = price_today(theta,m,rate,volatility,payoff);
+		double i = (1001 - 1) / 2; // indice du spot rentré
+		double price = result[i];
+		double delta = (result[i] - result[i-1]) / (m.spot_vect[i] - m.spot_vect[i-1]);
+		double gamma = (result[i + 1] - 2 * result[i] + result[i - 1]) / (pow((m.spot_vect[i+1] - m.spot_vect[i-1])/2, 2));
+		double theta_product = (result[0]-price);
+		std::cout << "Price: " <<price << std::endl;
+		std::cout << "Delta: " << delta << std::endl;
+		std::cout << "Gamma: " << gamma << std::endl;
+		std::cout << "Theta: " << theta_product << std::endl;
 	}
 }
 
@@ -63,9 +67,6 @@ namespace dauphine
 int main(int argc, char* argv[])
 {
     std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.2,1.0,true) << std::endl;
-	std::cout << "Price BS:spot 140 " << dauphine::bs_price(140, 100, 0.2, 1.0, true) << std::endl;
-	std::cout << "Price BS 1D: " << dauphine::bs_price(100, 100, 0.2, 1.0/365, true) << std::endl;
-	std::cout << "Price BS 10D: " << dauphine::bs_price(100, 100, 0.2, 10.0 / 365, true) << std::endl;
 	dauphine::test();
     return 0;
 }

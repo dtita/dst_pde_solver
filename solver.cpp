@@ -44,7 +44,6 @@ namespace dauphine
 	double mesh::get_mesh_spot() const {
 		return m_spot;
 	}
-
 	std::vector<double> mesh::get_mesh_spot_boundaries() const {
 		return m_spot_boundaries;
 	}
@@ -154,7 +153,7 @@ namespace dauphine
 	}
 
 
-	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, double theta, initial_function payoff)
+	std::vector<double> price_today(double theta, mesh m, initial_function rate, initial_function vol,  initial_function payoff)
 	{
 		// arguments allow to follow S,t and 
 		std::vector<double> arguments(2);
@@ -175,7 +174,7 @@ namespace dauphine
 		std::vector<double> a = sub_vector(m, rate, vol, arguments,theta); //a(theta)
 		std::vector<double> b = diag_vector(m, rate, vol, arguments,theta); //b(theta)
 		std::vector<double> c = up_vector(m, rate, vol, arguments,theta); //c(theta)
-
+		std::vector<double> f_before(N);
 		//Condition aux bords (Test pour un call)
 		d[N - 1] = f_old[N - 1]; //Smax
 		d[0] = f_old[0];
@@ -191,12 +190,15 @@ namespace dauphine
 				d[i] = c_1[i] * f_old[i + 1] + b_1[i] * f_old[i] + a_1[i] * f_old[i - 1];
 
 			}
-			 // Now we solve the tridiagonal system
+
+			if (j == nb_step - 1) { // I keep the value at the before last step, to compute the theta
+				f_before = f_new;
+			}
+			// Now we solve the tridiagonal system
 			f_new = tridiagonal_solver(a, b, c, d);
 			f_old = f_new;
-
 		}
-		return f_old;
+		f_new[0] = f_before[floor(N / 2)];// to compute the theta, not very academic
 		return f_new;
 	}
 }

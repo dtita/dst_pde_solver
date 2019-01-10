@@ -13,15 +13,12 @@ namespace dauphine
 		double get_mesh_maturity() const;
 		double get_mesh_dx() const;
 		double get_mesh_spot() const;
-		double get_theta() const;
-		double get_theta_1() const;
         std::vector<double> spot_vect;
 		std::vector<double> t_vect;
         double d_x;
 		std::vector<double> get_mesh_spot_boundaries() const;
 		~mesh();
 	private:
-		double m_theta;
 		double m_dt;
 		double m_dx;
 		double m_maturity;
@@ -47,7 +44,7 @@ namespace dauphine
 	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,initial_function payoff);
 	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> up_price);
 //	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff, std::vector<double> col_up);
-	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, double theta, initial_function payoff);
+	std::vector<double> price_today(double theta, mesh m, initial_function rate, initial_function vol,  initial_function payoff);
 
   
     // Autre methode - TEST
