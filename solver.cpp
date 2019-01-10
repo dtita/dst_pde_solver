@@ -10,10 +10,10 @@ namespace dauphine
 		: m_dt(dt), m_dx(dx), m_maturity(maturity), m_spot(spot), m_spot_boundaries(boundaries)
 	{
 		std::vector<double> result(dx);
-		std::vector<double> result2(dx-1,0);
+		double inter_t =floor( maturity / dt);
+		std::vector<double> result2(inter_t);
 		double log_spot_min = std::log(boundaries[0]);
 		double log_spot_max = std::log(boundaries[1]);
-
 		double dlog = (log_spot_max - log_spot_min) /( dx-1);
 
 		for (std::size_t i = 0; i < dx; ++i)
@@ -21,16 +21,14 @@ namespace dauphine
 			result[i] = std::exp(log_spot_min + i * dlog);
 		}
 		spot_vect = result;
+		d_x = dlog;
 
-		for (std::size_t i = 0; i < dx - 1; ++i)
+		for (std::size_t i = 0; i < inter_t; ++i)
 		{
-			result[i] = log(spot_vect[i + 1]) - log(spot_vect[i]);
-			result2[i] = dlog;
+			result2[inter_t-1-i] = maturity-i*dt;
 		}
-		d_x = result2;
-	
+		t_vect = result2;
 	}
-
 	mesh::~mesh()
 	{
 	}
@@ -38,7 +36,7 @@ namespace dauphine
 		return m_maturity;
 	}
 	double mesh::get_mesh_dt() const {
-		return m_dt / 365.0;
+		return m_dt;
 	}
 	double mesh::get_mesh_dx() const {
 		return m_dx;
@@ -50,9 +48,6 @@ namespace dauphine
 	std::vector<double> mesh::get_mesh_spot_boundaries() const {
 		return m_spot_boundaries;
 	}
-
-
-
 
 
 	initial_function::initial_function(double(*f)(std::vector<double>))
@@ -72,26 +67,23 @@ namespace dauphine
 
 	// ici je compute le vecteur ‡ la maturitÈ pour avoir le prix ‡ matu et pouvoir faire backward, donc c'est juste appliquÈ le payoff pour le spot
 
-	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff) {
-		//std::vector<double> result=m.spot_vector();
+	std::vector<double> initial_price_vector(mesh m, initial_function payoff) {
 		std::vector<double> result = m.spot_vect;
 		for (std::size_t i = 0; i < result.size(); i++) {
-			//arguments[0] = (exp(result[i]));
-			arguments[0] = result[i];
-			if (payoff.function_operator(arguments) == 0) {
+			std::vector<double> result2(1);
+			result2[0] = result[i];
+			if (payoff.function_operator(result2) == 0) {
 				result[i] = 0;
 			}
 			else {
-				result[i] = payoff.function_operator(arguments);
-
+				result[i] = payoff.function_operator(result2);
 			}
 		}
 		return result;
 	}
 
-	std::vector<double> diag_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments)
+	std::vector<double> diag_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,double theta)
 	{
-		//std::vector<double> a=m.spot_vector();
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
 		std::vector<double> result(size, 0.0);
@@ -99,18 +91,15 @@ namespace dauphine
 		result[size - 1] = 1.0;
 		for (std::size_t i = 1; i < size - 1; ++i)
 		{
-			//result[i]=1.0+arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+rate.function_operator(arguments));
-
-			result[i] = 1.0 + arguments[4] * m.get_mesh_dt()*((pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2)) + rate.function_operator(arguments));
-
+			arguments[0] = a[i]; // coeff depends on S if rate or vol depend on S
+			result[i] = 1.0 + theta * m.get_mesh_dt()*((pow(vol.function_operator(arguments), 2) / pow(m.d_x, 2)) + rate.function_operator(arguments));
 		}
 		return result;
 	}
 
 
-	std::vector<double> sub_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments)
+	std::vector<double> sub_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,double theta)
 	{
-		//std::vector<double> a=m.spot_vector();
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
 		std::vector<double> result(size, 0.0);
@@ -118,36 +107,27 @@ namespace dauphine
 		result[0] = 0;
 		for (std::size_t i = 1; i < size - 1; ++i)
 		{
-			//result[i]=-0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
-
-			result[i] = -0.5*arguments[4] * m.get_mesh_dt()*((pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x[i-1])));
-			//result[i] = (arguments[4] *m.get_mesh_dt()*(-(0.5*pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2) + 0.25*(pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments) / m.d_x[i-1]))));
+			arguments[0] = a[i]; // coeff depends on S if rate or vol depend on S
+			result[i] = -0.5*theta * m.get_mesh_dt()*((pow(vol.function_operator(arguments), 2) / pow(m.d_x, 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x)));
 		}
 		return result;
 	}
 
 
-	std::vector<double> up_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments)
+	std::vector<double> up_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,double theta)
 	{
-		//std::vector<double> a=m.spot_vector();
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
 		std::vector<double> result(size, 0.0);
-
 		result[0] = 0.0;
 		result[size - 1] = 0.0;
 		for (std::size_t i = 1; i < size - 1; ++i)
 		{
-
-			//result[i]=0.5*arguments[4]*m.get_mesh_dt()*((-pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
-			//result[i] = (arguments[4] *m.get_mesh_dt()*((-0.5*pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2) + 0.25*(vol.function_operator(arguments), 2) - rate.function_operator(arguments) / m.d_x[i - 1])));
-			result[i] = 0.5*arguments[4] * m.get_mesh_dt()*((-pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x[i-1])));
-			//result[i] = (arguments[4] * m.get_mesh_dt()*((-0.5*pow(vol.function_operator(arguments), 2) / pow(m.d_x[i - 1], 2) + 0.25*(pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments) / m.d_x[i - 1]))));
-
+			arguments[0] = a[i]; // coeff depends on S if rate or vol depend on S
+			result[i] = 0.5*theta * m.get_mesh_dt()*((-pow(vol.function_operator(arguments), 2) / pow(m.d_x, 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x)));
 		}
 		return result;
 	}
-
 
 	// Triadiag algo qui fonctionne !
 	std::vector<double> tridiagonal_solver(std::vector<double>  a, std::vector<double>  b, std::vector<double>  c, std::vector<double>  f)
@@ -174,32 +154,27 @@ namespace dauphine
 	}
 
 
-	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff)
+	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, double theta, initial_function payoff)
 	{
+		// arguments allow to follow S,t and 
+		std::vector<double> arguments(2);
+		arguments[0] = m.spot_vect[0];
+		arguments[1] = m.t_vect[1];
 
-
-		std::vector<double> f_old = initial_price_vector(m, rate, vol, arguments, payoff);
-
-
+		std::vector<double> f_old = initial_price_vector(m, payoff);
 		long N = f_old.size();
 		std::vector<double> d(N, 0.0);
 		std::vector<double> f_new(N, 0.0);
 		double dt = m.get_mesh_dt();
-
-		int nb_step = floor(arguments[1] / dt);
-
-
-		std::vector<double> arg = arguments;
-		arg[4] = arguments[4] - 1; //theta-1
+		int nb_step = floor(m.get_mesh_maturity()/ dt);
 
 		//Coeffs de la Matrice
-		std::vector<double> a_1 = sub_vector(m, rate, vol, arg); //a(theta-1)
-		std::vector<double> b_1 = diag_vector(m, rate, vol, arg); //b(theta-1)
-		std::vector<double> c_1 = up_vector(m, rate, vol, arg); //c(theta-1)
-
-		std::vector<double> a = sub_vector(m, rate, vol, arguments); //a(theta)
-		std::vector<double> b = diag_vector(m, rate, vol, arguments); //b(theta)
-		std::vector<double> c = up_vector(m, rate, vol, arguments); //c(theta)
+		std::vector<double> a_1 = sub_vector(m, rate, vol, arguments,theta-1); //a(theta-1)
+		std::vector<double> b_1 = diag_vector(m, rate, vol, arguments, theta - 1); //b(theta-1)
+		std::vector<double> c_1 = up_vector(m, rate, vol, arguments, theta - 1); //c(theta-1)
+		std::vector<double> a = sub_vector(m, rate, vol, arguments,theta); //a(theta)
+		std::vector<double> b = diag_vector(m, rate, vol, arguments,theta); //b(theta)
+		std::vector<double> c = up_vector(m, rate, vol, arguments,theta); //c(theta)
 
 		//Condition aux bords (Test pour un call)
 		d[N - 1] = f_old[N - 1]; //Smax
@@ -207,23 +182,15 @@ namespace dauphine
 
 		//return c_1;
 		for (int j = 0; j < nb_step; j++)
-
 		{
 			// Creation 2nd membre
-			//d[N - 1] = f_old[N - 1] * exp(-rate.function_operator(arguments)*m.get_mesh_dt());
+			d[N - 1] = f_old[N - 1] * exp(-rate.function_operator(arguments)*m.get_mesh_dt());
 
 			for (long i = 1; i < N - 1; i++)
 			{
-				//d[i] = c_1[i]*f_old[i+1]+b_1[i]*f_old[i]+a_1[i-1]*f_old[i-1];
-
 				d[i] = c_1[i] * f_old[i + 1] + b_1[i] * f_old[i] + a_1[i] * f_old[i - 1];
 
 			}
-
-			/* //Condition aux bords (Test pour un call)
-			 d[N-1]=f_old[N-1]; //Smax
-			 d[0]=f_old[0]; */
-
 			 // Now we solve the tridiagonal system
 			f_new = tridiagonal_solver(a, b, c, d);
 			f_old = f_new;
