@@ -51,11 +51,17 @@ namespace dauphine
         mesh m(1./365.,1001,1.,100.,mesh_boundaries);
         
 		std::vector<double> result = price_today(m,rate,volatility,theta,payoff);
-        
+		double i = (1001 - 1) / 2; // indice du spot rentré
+		double price = result[i];
+		double delta = (result[i] - result[i-1]) / (m.spot_vect[i] - m.spot_vect[i-1]);
+		double gamma = (result[i + 1] - 2 * result[i] + result[i - 1]) / (pow((m.spot_vect[i+1] - m.spot_vect[i-1])/2, 2));
+		double theta_product = (result[0]-price);
+		std::cout << "Price: " <<price << std::endl;
+		std::cout << "Delta: " << delta << std::endl;
+		std::cout << "Gamma: " << gamma << std::endl;
+		std::cout << "Theta: " << theta_product << std::endl;
 
-        ////std::cout <<"Indice: "<<indice_result << std::endl;
-        std::cout <<"Price: "<<result[(1001-1)/2] << std::endl;
-        
+
 	}
 }
 
@@ -63,9 +69,6 @@ namespace dauphine
 int main(int argc, char* argv[])
 {
     std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.2,1.0,true) << std::endl;
-	std::cout << "Price BS:spot 140 " << dauphine::bs_price(140, 100, 0.2, 1.0, true) << std::endl;
-	std::cout << "Price BS 1D: " << dauphine::bs_price(100, 100, 0.2, 1.0/365, true) << std::endl;
-	std::cout << "Price BS 10D: " << dauphine::bs_price(100, 100, 0.2, 10.0 / 365, true) << std::endl;
 	dauphine::test();
     return 0;
 }
