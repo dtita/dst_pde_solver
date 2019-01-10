@@ -44,7 +44,6 @@ namespace dauphine
 	double mesh::get_mesh_spot() const {
 		return m_spot;
 	}
-
 	std::vector<double> mesh::get_mesh_spot_boundaries() const {
 		return m_spot_boundaries;
 	}
@@ -154,7 +153,7 @@ namespace dauphine
 	}
 
 
-	std::vector<double> price_today(mesh m, initial_function rate, initial_function vol, double theta, initial_function payoff)
+	std::vector<double> price_today(double theta, mesh m, initial_function rate, initial_function vol,  initial_function payoff)
 	{
 		// arguments allow to follow S,t and 
 		std::vector<double> arguments(2);
