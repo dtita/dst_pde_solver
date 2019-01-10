@@ -24,7 +24,7 @@ namespace dauphine
 
 		for (std::size_t i = 0; i < dx - 1; ++i)
 		{
-			//result2[i] = log(spot_vect[i + 1]) - log(spot_vect[i]);
+			result[i] = log(spot_vect[i + 1]) - log(spot_vect[i]);
 			result2[i] = dlog;
 		}
 		d_x = result2;
@@ -121,7 +121,7 @@ namespace dauphine
 			//result[i]=-0.5*arguments[4]*m.get_mesh_dt()*((pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
 
 			result[i] = -0.5*arguments[4] * m.get_mesh_dt()*((pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x[i-1])));
-			result[i] = (arguments[4] *m.get_mesh_dt()*(-(0.5*pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2) + 0.25*(pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments) / m.d_x[i-1]))));
+			//result[i] = (arguments[4] *m.get_mesh_dt()*(-(0.5*pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2) + 0.25*(pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments) / m.d_x[i-1]))));
 		}
 		return result;
 	}
@@ -141,8 +141,8 @@ namespace dauphine
 
 			//result[i]=0.5*arguments[4]*m.get_mesh_dt()*((-pow(vol.function_operator(arguments),2)/pow(m.get_mesh_dx(),2))+((pow(vol.function_operator(arguments),2)-rate.function_operator(arguments))/(2.0*m.get_mesh_dx())));
 			//result[i] = (arguments[4] *m.get_mesh_dt()*((-0.5*pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2) + 0.25*(vol.function_operator(arguments), 2) - rate.function_operator(arguments) / m.d_x[i - 1])));
-			//result[i] = 0.5*arguments[4] * m.get_mesh_dt()*((-pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x[i-1])));
-			result[i] = (arguments[4] * m.get_mesh_dt()*((-0.5*pow(vol.function_operator(arguments), 2) / pow(m.d_x[i - 1], 2) + 0.25*(pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments) / m.d_x[i - 1]))));
+			result[i] = 0.5*arguments[4] * m.get_mesh_dt()*((-pow(vol.function_operator(arguments), 2) / pow(m.d_x[i-1], 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x[i-1])));
+			//result[i] = (arguments[4] * m.get_mesh_dt()*((-0.5*pow(vol.function_operator(arguments), 2) / pow(m.d_x[i - 1], 2) + 0.25*(pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments) / m.d_x[i - 1]))));
 
 		}
 		return result;
