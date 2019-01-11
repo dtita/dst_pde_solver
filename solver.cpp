@@ -9,7 +9,7 @@ namespace dauphine
 	mesh::mesh(double dt, double dx, double maturity, double spot, std::vector<double> boundaries)
 		: m_dt(dt), m_dx(dx), m_maturity(maturity), m_spot(spot), m_spot_boundaries(boundaries)
 	{
-		std::vector<double> result(dx);
+		std::vector<double> result(dx,0.);
 		double inter_t =floor( maturity / dt);
 		std::vector<double> result2(inter_t);
 		double log_spot_min = std::log(boundaries[0]);
@@ -32,20 +32,17 @@ namespace dauphine
 	mesh::~mesh()
 	{
 	}
-	double mesh::get_mesh_maturity() const {
+	double const mesh::get_mesh_maturity() const {
 		return m_maturity;
 	}
-	double mesh::get_mesh_dt() const {
+	double const mesh::get_mesh_dt() const {
 		return m_dt;
 	}
-	double mesh::get_mesh_dx() const {
+	double const mesh::get_mesh_dx() const {
 		return m_dx;
 	}
-	double mesh::get_mesh_spot() const {
+	double const mesh::get_mesh_spot() const {
 		return m_spot;
-	}
-	std::vector<double> mesh::get_mesh_spot_boundaries() const {
-		return m_spot_boundaries;
 	}
 
 
