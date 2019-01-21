@@ -1,4 +1,5 @@
 #include "solver.hpp"
+#include "volatility.hpp"
 #include <cmath>
 #include <limits>
 #include <algorithm>
@@ -77,7 +78,7 @@ namespace dauphine
 		return result;
 	}
 
-	std::vector<double> diag_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,double theta)
+	std::vector<double> diag_vector(mesh m, initial_function rate, volatility vol, std::vector<double> arguments,double theta)
 	{
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
@@ -87,13 +88,13 @@ namespace dauphine
 		for (std::size_t i = 1; i < size - 1; ++i)
 		{
 			arguments[0] = a[i]; // coeff depends on S if rate or vol depend on S
-			result[i] = 1.0 + theta * m.get_mesh_dt()*((pow(vol.function_operator(arguments), 2) / pow(m.d_x, 2)) + rate.function_operator(arguments));
+			result[i] = 1.0 + theta * m.get_mesh_dt()*((pow(vol.get_volatility(arguments), 2) / pow(m.d_x, 2)) + rate.function_operator(arguments));
 		}
 		return result;
 	}
 
 
-	std::vector<double> sub_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,double theta)
+	std::vector<double> sub_vector(mesh m, initial_function rate, volatility vol, std::vector<double> arguments,double theta)
 	{
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
@@ -103,13 +104,13 @@ namespace dauphine
 		for (std::size_t i = 1; i < size - 1; ++i)
 		{
 			arguments[0] = a[i]; // coeff depends on S if rate or vol depend on S
-			result[i] = -0.5*theta * m.get_mesh_dt()*((pow(vol.function_operator(arguments), 2) / pow(m.d_x, 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x)));
+			result[i] = -0.5*theta * m.get_mesh_dt()*((pow(vol.get_volatility(arguments), 2) / pow(m.d_x, 2)) + ((pow(vol.get_volatility(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x)));
 		}
 		return result;
 	}
 
 
-	std::vector<double> up_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,double theta)
+	std::vector<double> up_vector(mesh m, initial_function rate, volatility vol, std::vector<double> arguments,double theta)
 	{
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
@@ -119,7 +120,7 @@ namespace dauphine
 		for (std::size_t i = 1; i < size - 1; ++i)
 		{
 			arguments[0] = a[i]; // coeff depends on S if rate or vol depend on S
-			result[i] = 0.5*theta * m.get_mesh_dt()*((-pow(vol.function_operator(arguments), 2) / pow(m.d_x, 2)) + ((pow(vol.function_operator(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x)));
+			result[i] = 0.5*theta * m.get_mesh_dt()*((-pow(vol.get_volatility(arguments), 2) / pow(m.d_x, 2)) + ((pow(vol.get_volatility(arguments), 2) - rate.function_operator(arguments)) / (2.0*m.d_x)));
 		}
 		return result;
 	}
@@ -148,8 +149,7 @@ namespace dauphine
 
 	}
 
-
-	std::vector<double> price_today(double theta, mesh m, initial_function rate, initial_function vol,  initial_function payoff, bool time_S_dependent)
+	std::vector<double> price_today(double theta, mesh m, initial_function rate, volatility vol,  initial_function payoff, bool time_S_dependent)
 	{
 		// arguments allow to follow S,t and 
 		std::vector<double> arguments(2);
@@ -171,7 +171,8 @@ namespace dauphine
 		std::vector<double> b = diag_vector(m, rate, vol, arguments,theta); //b(theta)
 		std::vector<double> c = up_vector(m, rate, vol, arguments,theta); //c(theta)
 		std::vector<double> f_before(N);
-		//Condition aux bords (Test pour un call)
+		
+        //Condition aux bords (Test pour un call)
 		d[N - 1] = f_old[N - 1]; //Smax
 		d[0] = f_old[0];
 
@@ -182,7 +183,7 @@ namespace dauphine
 				std::vector<double> a_1 = sub_vector(m, rate, vol, arguments, theta - 1); //a(theta-1)
 				std::vector<double> b_1 = diag_vector(m, rate, vol, arguments, theta - 1); //b(theta-1)
 				std::vector<double> c_1 = up_vector(m, rate, vol, arguments, theta - 1); //c(theta-1)
-				arguments[1] = m.t_vect[j]; //on modifie le temps pour changer les calculs de rate et taux si besoin
+				arguments[1] = m.t_vect[j]; //on modifie le temps pour changer les calculs de rate et vol si besoin
 				std::vector<double> a = sub_vector(m, rate, vol, arguments, theta); //a(theta)
 				std::vector<double> b = diag_vector(m, rate, vol, arguments, theta); //b(theta)
 				std::vector<double> c = up_vector(m, rate, vol, arguments, theta); //c(theta)

@@ -24,12 +24,16 @@ set(PDE_SOLVER_SRCS
     closed_form.hpp
     closed_form.cpp
     main.cpp
+    volatility.cpp
+    volatility.hpp
     params.cpp
     params.hpp
     mesh.cpp
     mesh.hpp
-	solver.hpp
-	solver.cpp)
+    solver.hpp
+    solver.cpp
+    
+)
 
 set(PDE_SOLVER_TARGET pde_solver)
 add_executable(${PDE_SOLVER_TARGET} ${PDE_SOLVER_SRCS})

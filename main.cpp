@@ -1,6 +1,7 @@
 #include <iostream>
 #include "closed_form.hpp"
 #include "solver.hpp"
+#include "volatility.hpp"
 //#include "solverT.hpp"
 //#include "params.hpp"
 //#include "mesh.hpp"
@@ -19,9 +20,9 @@ namespace dauphine
 	double rate_function(std::vector<double> arguments) {
 		return 0.0;
 	}
-	double volatility_function(std::vector<double> arguments) {
+	/*double volatility_function(std::vector<double> arguments) {
 		return 0.20;
-	}
+	} */
 	//double boundaries_up(std::vector<double> arguments) {
 	//	return  std::max(arguments[2] - 100, 0.);
 	//}
@@ -43,20 +44,35 @@ namespace dauphine
 		
 		initial_function payoff(payoff_function);
 		initial_function rate(rate_function);
-		initial_function volatility(volatility_function);
+       
+		//initial_function volatility(volatility_function);
 		//initial_function up_boundaries(boundaries_up);
 		//initial_function down_boundaries(boundaries_down);
 
 		//mesh(double dt, double dx, double maturity, double spot, std::vector<double> boundaries, double theta)
-		int nb_x = 1001;
-		mesh m(1./365.,1001,1.,100.,mesh_boundaries);
+		
+        //Nbr of points
+        int nb_x = 1001;
+		
+        //Creation mesh
+        mesh m(1./365.,1001,1.,100.,mesh_boundaries);
         
-		std::vector<double> result = price_today(theta,m,rate,volatility,payoff,false);
-		int i = (nb_x - 1) / 2; // indice du spot rentré
+        //Creation vol
+        volatility vol;
+        
+        //Compute price
+		std::vector<double> result = price_today(theta,m,rate,vol,payoff,false);
+		
+        // Spot index
+        int i = (nb_x - 1) / 2;
+        
+        //Greeks
 		double price = result[i];
 		double delta = (result[i] - result[i-1]) / (m.spot_vect[i] - m.spot_vect[i-1]);
 		double gamma = (result[i + 1] - 2 * result[i] + result[i - 1]) / (pow((m.spot_vect[i+1] - m.spot_vect[i-1])/2.0, 2));
 		double theta_product = (result[0]-price);
+        
+        //Print results (Price and Greeks)
 		std::cout << "Price: " <<price << std::endl;
 		std::cout << "Delta: " << delta << std::endl;
 		std::cout << "Gamma: " << gamma << std::endl;
@@ -67,7 +83,7 @@ namespace dauphine
 
 int main(int argc, char* argv[])
 {
-    std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.2,1.0,true) << std::endl;
+    std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.20,1.0,true) << std::endl;
 	dauphine::test();
     return 0;
 }
