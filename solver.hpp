@@ -1,8 +1,10 @@
 #ifndef SOLVER_HPP
 #define SOLVER_HPP
+#include "volatility.hpp"
+#include "rates.hpp"
+#include "payoff.hpp"
 
 #include <vector>
-#include "volatility.hpp"
 
 namespace dauphine
 {
@@ -28,8 +30,6 @@ namespace dauphine
 
 
 	//pour initialiser payoff, rate, vol, boundaries
-
-    
 	class initial_function {
 	public:
 		initial_function(double(*f)(std::vector<double>));
@@ -42,18 +42,17 @@ namespace dauphine
 	//double diag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, double theta);
 	//double subdiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,double theta);
 	//double updiag_coeff(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,double theta);
-	/*std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,initial_function payoff);
-	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> up_price); */
+	std::vector<double> initial_price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments,initial_function payoff);
+	std::vector<double> column_up(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff,std::vector<double> up_price);
 //	std::vector<double> price_vector(mesh m, initial_function rate, initial_function vol, std::vector<double> arguments, initial_function payoff, std::vector<double> col_up);
-	
+	std::vector<double> price_today(double theta, mesh m, rates rate, volatility vol,  initial_function payoff, bool time_S_dependent);
 
   
     // Autre methode - TEST
-    std::vector<double> price_today(double theta, mesh m, initial_function rate, volatility vol,  initial_function payoff, bool time_S_dependent);
     
-    std::vector<double> up_vector(mesh m, initial_function rate,volatility vol, std::vector<double> arguments);
-    std::vector<double> sub_vector(mesh m, initial_function rate,volatility vol, std::vector<double> arguments);
-    std::vector<double> diag_vector(mesh m, initial_function rate,volatility vol, std::vector<double> arguments);
+    std::vector<double> up_vector(mesh m, rates rate,volatility vol, std::vector<double> arguments);
+    std::vector<double> sub_vector(mesh m, rates rate,volatility vol, std::vector<double> arguments);
+    std::vector<double> diag_vector(mesh m, rates rate,volatility vol, std::vector<double> arguments);
     std::vector<double> tridiagonal_solver(std::vector<double>  a, std::vector<double>  b, std::vector<double>  c, std::vector<double>  f);
 }
 
