@@ -16,9 +16,9 @@ namespace dauphine
 	//Initial functions to be changed according to the user's needs
 	//modify this function to modify the payoff, arguments=[spot,maturity,mesh_boundaries_up,mesh_boundaries_down,theta]
 	
-	double payoff_function(std::vector<double> arguments) {
+	/*double payoff_function(std::vector<double> arguments) {
 		return std::max(arguments[0]-100,0.);
-	}
+	} */
 	/*double rate_function(std::vector<double> arguments) {
 		return 0.0;
 	} */
@@ -47,7 +47,7 @@ namespace dauphine
 		mesh_boundaries[0] = std::exp(std::log(spot) - 1.);
 		mesh_boundaries[1] = std::exp(std::log(spot) + 1.);
 		
-		initial_function payoff(payoff_function);
+		//initial_function payoff(payoff_function);
 		//initial_function rate(rate_function);
        
 		//initial_function volatility(volatility_function);
@@ -73,12 +73,12 @@ namespace dauphine
         rates rate;
 
 	//Creation payoff
-        //payoff p;
+        payoff p;
 
 
 
         //Compute price
-		std::vector<double> result = price_today(theta,m,rate,vol,payoff,false);
+		std::vector<double> result = price_today(theta,m,rate,vol,p,false);
 		
         // Spot index
         int i = (nb_x - 1) / 2;
