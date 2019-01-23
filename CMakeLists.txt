@@ -30,8 +30,6 @@ set(PDE_SOLVER_SRCS
     rates.hpp
     payoff.cpp
     rates.cpp
-    params.cpp
-    params.hpp
     mesh.cpp
     mesh.hpp
     solver.hpp

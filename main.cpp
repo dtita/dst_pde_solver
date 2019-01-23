@@ -19,7 +19,6 @@ namespace dauphine
 		double spot=100.;
 		double maturity=1.;
 		
-
 		//the client should be able to specify the value of θ
 		double theta = 0.5;
 
