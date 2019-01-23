@@ -28,19 +28,14 @@ namespace dauphine
     }
     
     //Declare the fonction for the implement the boundary conditions
-    double bound_dirichlet::bound_up(double f,std::vector<double> arguments,rates_const rate, mesh m) const
+    double bound_dirichlet::bound_up(const double& f, const double& time, const double& spot,const rates_const& rate,const mesh& m) const
     {
-        //arguments[0]: Use in return if the condition is path-dependent (depend on spot S)
-        //arguments[1]: Use in return if the condition is time-dependent (depend on time t)
-        
-        return f*exp(-rate.get_rates(arguments)*m.get_mesh_dt());
+        return f*exp(-rate.get_rates(time,spot)*m.get_mesh_dt());
     }
     
-    double bound_dirichlet::bound_down(double f) const
+    double bound_dirichlet::bound_down(const double& f) const
     {
-        //arguments[0]: Use in return if the condition is path-dependent (depend on spot S)
-        //arguments[1]: Use in return if the condition is time-dependent (depend on time t)
-        
+
         return f;
     }
 }

@@ -22,8 +22,8 @@ namespace dauphine
 		double theta = 0.5;
 
         //Nbr of points
-        int nb_x = 1001;
-    
+        double nb_x = 1001;
+		double dt = 1. / 365.;
         //Creation mesh
         
 	//The client should be able to specify to specify the mesh
@@ -33,7 +33,7 @@ namespace dauphine
         mesh_boundaries[0] = std::exp(std::log(spot) - 1.);
         mesh_boundaries[1] = std::exp(std::log(spot) + 1.);
 
-        mesh m(1./365.,1001,1.,100.,mesh_boundaries);
+        mesh m(dt,nb_x,maturity,spot,mesh_boundaries);
         
     
     //Creation vol
@@ -48,7 +48,6 @@ namespace dauphine
     // Creation boundaries
         
         bound_dirichlet bnd;
-
 
     //Compute price
 		std::vector<double> result = price_today(theta,m,rate,vol,p,bnd,false); // Use true if time-dependent

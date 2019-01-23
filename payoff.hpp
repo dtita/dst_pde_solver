@@ -18,9 +18,7 @@ namespace dauphine
     {
     public:
         
-        double get_payoff(std::vector<double> arguments) const;
-        
-        
+        double get_payoff(const double& time, const double& spot) const;
     };
 
 }
