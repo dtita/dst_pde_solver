@@ -28,12 +28,12 @@ namespace dauphine
         double d_x;
         ~mesh();
     private:
-        double m_dt;
+        const double m_dt;
         double m_dx;
         double m_maturity;
         double m_spot;
         std::vector<double> m_spot_boundaries;
-        
+ 
     };
     
 }

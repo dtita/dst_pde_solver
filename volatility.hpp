@@ -23,7 +23,7 @@ namespace dauphine
     class vol_const : public volatility
     {
     public:
-        double get_volatility(std::vector<double> arguments) const;
+        double get_volatility(const double& time, const double& spot) const;
         
     };
 

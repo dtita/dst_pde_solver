@@ -16,11 +16,8 @@ payoff::~payoff()
 }
  
 //Declare the fonction for the payoff
-double bs_call::get_payoff(std::vector<double> arguments) const
-{
-    //arguments[0]: Use in return if the payoff is path-dependent (depend on spot S)
-    //arguments[1]: Use in return if the payoff is time-dependent (depend on time t)
-        
-    return std::max(arguments[0]-100,0.); //Call option with strike price 100
+double bs_call::get_payoff(const double& time, const double& spot) const
+{        
+    return std::max(spot-100,0.); //Call option with strike price 100
 }
 }

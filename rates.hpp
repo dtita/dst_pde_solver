@@ -16,7 +16,7 @@ namespace dauphine
     class rates_const : public rates
     {
     public:
-        double get_rates(std::vector<double> arguments) const;
+        double get_rates(const double& time, const double& spot) const;
         
         
     };

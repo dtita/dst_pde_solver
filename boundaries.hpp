@@ -31,8 +31,8 @@ namespace dauphine
     {
     public:
         
-        double bound_up(double f,std::vector<double> arguments,rates_const rate, mesh m) const;
-        double bound_down(double f) const;
+        double bound_up(const double& f, const double& time, const double& spot, const rates_const& rate, const mesh& m) const;
+        double bound_down(const double& f) const;
         
         
     };
