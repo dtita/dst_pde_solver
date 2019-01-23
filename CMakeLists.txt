@@ -36,6 +36,8 @@ set(PDE_SOLVER_SRCS
     mesh.hpp
     solver.hpp
     solver.cpp
+    boundaries.cpp
+    boundaries.hpp
     
 )
 

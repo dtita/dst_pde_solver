@@ -6,8 +6,6 @@
 //
 
 #include "mesh.hpp"
-#include "params.hpp"
-#include "solver.hpp"
 #include <cmath>
 #include <limits>
 #include <algorithm>
@@ -15,38 +13,44 @@
 
 namespace dauphine
 {
-    Mesh::Mesh(double dt, double dx,double maturity, double spot,double theta, std::vector<double> spot_boundaries, std::vector<double> boundaries)
-    : m_spot_boundaries(boundaries),p(dt,dx,maturity,spot,theta,spot_boundaries)
+    mesh::mesh(double dt, double dx, double maturity, double spot, std::vector<double> boundaries)
+    : m_dt(dt), m_dx(dx), m_maturity(maturity), m_spot(spot), m_spot_boundaries(boundaries)
+    {
+        std::vector<double> result(dx,0.);
+        double inter_t =floor( maturity / dt);
+        std::vector<double> result2(inter_t);
+        
+        double log_spot_min = std::log(boundaries[0]);
+        double log_spot_max = std::log(boundaries[1]);
+        double dlog = (log_spot_max - log_spot_min) /( dx-1);
+        
+        for (std::size_t i = 0; i < dx; ++i)
+        {
+            result[i] = std::exp(log_spot_min + i * dlog);
+        }
+        spot_vect = result;
+        d_x = dlog;
+        
+        for (std::size_t i = 0; i < inter_t; ++i)
+        {
+            result2[i] = maturity-i*dt;
+        }
+        t_vect = result2;
+    }
+    mesh::~mesh()
     {
     }
-    
-    Mesh::~Mesh()
-    {
+    double const mesh::get_mesh_maturity() const {
+        return m_maturity;
     }
-    
-    std::vector<double> Mesh::get_mesh_spot_boundaries() const
-    {
-        return m_spot_boundaries;
+    double const mesh::get_mesh_dt() const {
+        return m_dt;
     }
-    
-    
-    std::vector<double> Mesh::spot_vector(params p)
-    {
-        int size = floor((m_spot_boundaries[0] - m_spot_boundaries[1]) / p.get_dx())+1;
-        std::vector<double> result(size);
-        double log_spot_min = std::log(m_spot_boundaries[0]);   //
-  	double log_spot_max = std::log(m_spot_boundaries[1]);   //
-
-	for (std::size_t i = 0; i < result.size(); ++i)
-            {
-		result[i] = std::exp(log_spot_min + i * p.get_dx());   // test prof
-                //result[i] =log(m_spot_boundaries[1]+i*p.get_dx());
-            }
-        return result;
+    double const mesh::get_mesh_dx() const {
+        return m_dx;
     }
-
-
-
-
+    double const mesh::get_mesh_spot() const {
+        return m_spot;
+    }
 
 }

@@ -1,5 +1,7 @@
 #include "solver.hpp"
+#include "mesh.hpp"
 #include "volatility.hpp"
+#include "boundaries.hpp"
 #include <cmath>
 #include <limits>
 #include "rates.hpp"
@@ -9,60 +11,6 @@
 namespace dauphine
 {
 
-	mesh::mesh(double dt, double dx, double maturity, double spot, std::vector<double> boundaries)
-		: m_dt(dt), m_dx(dx), m_maturity(maturity), m_spot(spot), m_spot_boundaries(boundaries)
-	{
-		std::vector<double> result(dx,0.);
-		double inter_t =floor( maturity / dt);
-		std::vector<double> result2(inter_t);
-		double log_spot_min = std::log(boundaries[0]);
-		double log_spot_max = std::log(boundaries[1]);
-		double dlog = (log_spot_max - log_spot_min) /( dx-1);
-
-		for (std::size_t i = 0; i < dx; ++i)
-		{
-			result[i] = std::exp(log_spot_min + i * dlog);
-		}
-		spot_vect = result;
-		d_x = dlog;
-
-		for (std::size_t i = 0; i < inter_t; ++i)
-		{
-			result2[i] = maturity-i*dt;
-		}
-		t_vect = result2;
-	}
-	mesh::~mesh()
-	{
-	}
-	double const mesh::get_mesh_maturity() const {
-		return m_maturity;
-	}
-	double const mesh::get_mesh_dt() const {
-		return m_dt;
-	}
-	double const mesh::get_mesh_dx() const {
-		return m_dx;
-	}
-	double const mesh::get_mesh_spot() const {
-		return m_spot;
-	}
-
-
-	initial_function::initial_function(double(*f)(std::vector<double>))
-		: m_f(f)
-	{
-	}
-	double initial_function::function_operator(std::vector<double> arguments)
-	{
-		return m_f(arguments);
-	}
-
-	initial_function::~initial_function()
-	{
-	}
-
-	// AUTRE METHODE - TEST
 	// ici je compute le vecteur ‡ la maturitÈ pour avoir le prix ‡ matu et pouvoir faire backward, donc c'est juste appliquÈ le payoff pour le spot
 
 	std::vector<double> initial_price_vector(mesh m, payoff p) {
@@ -80,6 +28,7 @@ namespace dauphine
 		return result;
 	}
 
+    // Compute coeffs Matrix
 	std::vector<double> diag_vector(mesh m, rates rate, volatility vol, std::vector<double> arguments, double theta)
 	{
 		std::vector<double> a = m.spot_vect;
@@ -128,12 +77,12 @@ namespace dauphine
 	}
 
 	// Triadiag algo qui fonctionne !
-	std::vector<double> tridiagonal_solver(std::vector<double>  a, std::vector<double>  b, std::vector<double>  c, std::vector<double>  f)
+	std::vector<double> tridiagonal_solver(std::vector<double>  a, std::vector<double>  b, std::vector<double>  c, std::vector<double>  f,boundaries bnd)
 	{
 
 		long n = f.size();
 		std::vector<double> x(n);
-		x[0] = f[0];
+		x[0] = bnd.bound_down(f[0]); //boundary down
 		for (int i = 1; i < n; i++) {
 
 			double m = a[i] / b[i - 1];
@@ -151,7 +100,8 @@ namespace dauphine
 
 	}
 
-	std::vector<double> price_today(double theta, mesh m, rates rate, volatility vol,  payoff p, bool time_S_dependent)
+    //Compute result price vector
+	std::vector<double> price_today(double theta, mesh m, rates rate, volatility vol,  payoff p,boundaries bnd, bool time_S_dependent)
 	{
 		// arguments allow to follow S,t and 
 		std::vector<double> arguments(2);
@@ -175,8 +125,9 @@ namespace dauphine
 		std::vector<double> f_before(N);
 		
         //Condition aux bords (Test pour un call)
-		d[N - 1] = f_old[N - 1]; //Smax
-		d[0] = f_old[0];
+        //d[N - 1] = f_old[N - 1]; //Smax: boundary max
+        d[N - 1] = bnd.bound_up(f_old[N - 1],arguments,rate,m);
+		d[0] = bnd.bound_down(f_old[0]); //boundary down
 
 		//return c_1;
 		for (int j = 0; j < nb_step; j++)
@@ -192,8 +143,10 @@ namespace dauphine
 			}
 
 			// Creation 2nd membre
-			d[N - 1] = f_old[N - 1] * exp(-rate.get_rates(arguments)*m.get_mesh_dt());
-			for (long i = 1; i < N - 1; i++)
+			//d[N - 1] = f_old[N - 1] * exp(-rate.get_rates(arguments)*m.get_mesh_dt());
+            d[N - 1] = bnd.bound_up(f_old[N - 1],arguments,rate,m);
+            
+            for (long i = 1; i < N - 1; i++)
 			{
 				d[i] = c_1[i] * f_old[i + 1] + b_1[i] * f_old[i] + a_1[i] * f_old[i - 1];
 
@@ -202,7 +155,7 @@ namespace dauphine
 				f_before = f_new;
 			}
 			// Now we solve the tridiagonal system
-			f_new = tridiagonal_solver(a, b, c, d);
+			f_new = tridiagonal_solver(a, b, c, d,bnd);
 			f_old = f_new;
 		}
 		f_new[0] = f_before[floor(N / 2)];// to compute the theta, not very academic
