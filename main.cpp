@@ -15,7 +15,6 @@ namespace dauphine
 	void test()
 	{
 		// make sure the arguments of the payoff are properly defined
-		int number_arguments(5);
 		double spot=100.;
 		double maturity=1.;
 		
