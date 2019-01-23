@@ -8,7 +8,6 @@
 #include "boundaries.hpp"
 #include "mesh.hpp"
 #include "rates.hpp"
-//#include "solver.hpp"
 #include <cmath>
 #include <limits>
 #include <algorithm>
@@ -23,8 +22,13 @@ namespace dauphine
         
     }
     
+    
+    boundaries::~boundaries()
+    {
+    }
+    
     //Declare the fonction for the implement the boundary conditions
-    double boundaries::bound_up(double f,std::vector<double> arguments,rates rate, mesh m) const
+    double bound_dirichlet::bound_up(double f,std::vector<double> arguments,rates_const rate, mesh m) const
     {
         //arguments[0]: Use in return if the condition is path-dependent (depend on spot S)
         //arguments[1]: Use in return if the condition is time-dependent (depend on time t)
@@ -32,17 +36,11 @@ namespace dauphine
         return f*exp(-rate.get_rates(arguments)*m.get_mesh_dt());
     }
     
-    double boundaries::bound_down(double f) const
+    double bound_dirichlet::bound_down(double f) const
     {
         //arguments[0]: Use in return if the condition is path-dependent (depend on spot S)
         //arguments[1]: Use in return if the condition is time-dependent (depend on time t)
         
         return f;
     }
-
-    
-    boundaries::~boundaries()
-    {
-    }
-    
 }

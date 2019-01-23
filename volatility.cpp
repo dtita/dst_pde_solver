@@ -18,18 +18,17 @@ volatility::volatility()
 {
 }
 
-//Declare the fonction for the volatility
-double volatility::get_volatility(std::vector<double> arguments) const
-{
-    //arguments[0]: Use in return if the volatility is path-dependent (depend on spot S)
-    //arguments[1]: Use in return if the volatility is time-dependent (depend on time t)
-    
-    return 0.20; //Here in the exemple the vol is constant and equal 20%
-}
-
 
 volatility::~volatility()
 {
 }
-    
+
+//Declare the fonction for the volatility
+double vol_const::get_volatility(std::vector<double> arguments) const
+{
+    //arguments[0]: Use in return if the volatility is path-dependent (depend on spot S)
+    //arguments[1]: Use in return if the volatility is time-dependent (depend on time t)
+        
+    return 0.20; //Here in the exemple the vol is constant and equal 20%
+}
 }

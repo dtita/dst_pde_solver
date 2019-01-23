@@ -22,11 +22,19 @@ namespace dauphine
     class boundaries
     {
     public:
-         boundaries();
-        double bound_up(double f,std::vector<double> arguments,rates rate, mesh m) const;
-        double bound_down(double f) const;
+        boundaries();
         virtual ~boundaries();
 
+    };
+    
+    class bound_dirichlet : public boundaries
+    {
+    public:
+        
+        double bound_up(double f,std::vector<double> arguments,rates_const rate, mesh m) const;
+        double bound_down(double f) const;
+        
+        
     };
     
 }

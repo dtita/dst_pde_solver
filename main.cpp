@@ -37,17 +37,17 @@ namespace dauphine
         
     
     //Creation vol
-        volatility vol;
+        vol_const vol;
         
 	//Creation rates
-        rates rate;
+        rates_const rate;
 
 	//Creation payoff
-        payoff p;
+        bs_call p;
         
     // Creation boundaries
         
-        boundaries bnd;
+        bound_dirichlet bnd;
 
 
     //Compute price
