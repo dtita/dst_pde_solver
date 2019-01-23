@@ -16,9 +16,15 @@ namespace dauphine
     {
         public:
             explicit volatility();
-            double get_volatility(std::vector<double> arguments) const;
             virtual ~volatility();
        
+    };
+    
+    class vol_const : public volatility
+    {
+    public:
+        double get_volatility(std::vector<double> arguments) const;
+        
     };
 
 }

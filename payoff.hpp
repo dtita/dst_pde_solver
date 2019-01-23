@@ -10,9 +10,17 @@ namespace dauphine
     {
         public:
             explicit payoff();
-	    double get_payoff(std::vector<double> arguments) const;
             virtual ~payoff();
        
+    };
+    
+    class bs_call: public payoff
+    {
+    public:
+        
+        double get_payoff(std::vector<double> arguments) const;
+        
+        
     };
 
 }

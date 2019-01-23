@@ -9,9 +9,16 @@ namespace dauphine
     {
         public:
             explicit rates();
-	    double get_rates(std::vector<double> arguments) const;
             virtual ~rates();
        
+    };
+    
+    class rates_const : public rates
+    {
+    public:
+        double get_rates(std::vector<double> arguments) const;
+        
+        
     };
 
 }
