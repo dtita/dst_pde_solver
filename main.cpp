@@ -40,7 +40,7 @@ namespace dauphine
         vol_const vol_c(0.20);
         
 	//Creation rates
-        rates_const rate;
+        rates_const rate(0.0);
 
 	//Creation payoff
         bs_call p;
@@ -61,7 +61,7 @@ namespace dauphine
 		double delta = (result[i] - result[i-1]) / (m.spot_vect[i] - m.spot_vect[i-1]);
 		double gamma = (result[i + 1] - 2 * result[i] + result[i - 1]) / (pow((m.spot_vect[i+1] - m.spot_vect[i-1])/2.0, 2));
 		double theta_product = (result[0]-price);
-		// for the vega, we should have a discretization w.r.t the volatility
+		// for the vega, we should have a discretization with respect to the volatility
         
     //Print results (Price and Greeks)
 		std::cout << "Price: " <<price << std::endl;

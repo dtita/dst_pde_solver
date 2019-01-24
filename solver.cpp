@@ -27,7 +27,7 @@ namespace dauphine
 	}
 
     // Compute coeffs Matrix
-	std::vector<double> diag_vector(const mesh& m, const rates_const& rate,const volatility& v, const double& time, double spot, const double& theta)
+	std::vector<double> diag_vector(const mesh& m, const rates& rate, const volatility& v, const double& time, double spot, const double& theta)
 	{
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
@@ -43,7 +43,7 @@ namespace dauphine
 	}
 
 
-	std::vector<double> sub_vector(const mesh& m, const rates_const& rate, const volatility& v,const double& time, double spot, const double& theta)
+	std::vector<double> sub_vector(const mesh& m, const rates& rate, const volatility& v,const double& time, double spot, const double& theta)
 	{
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
@@ -59,7 +59,7 @@ namespace dauphine
 	}
 
 
-	std::vector<double> up_vector(const mesh& m, const rates_const& rate, const volatility& v, const double& time, double spot, const double& theta)
+	std::vector<double> up_vector(const mesh& m, const rates& rate, const volatility& v, const double& time, double spot, const double& theta)
 	{
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
@@ -98,7 +98,7 @@ namespace dauphine
 	}
 
     //Compute result price vector
-	std::vector<double> price_today(const double& theta,const mesh& m, const rates_const& rate, const volatility& v,const  payoff& p, const boundaries& bnd_down, const boundaries& bnd_up, const bool& time_S_dependent)
+	std::vector<double> price_today(const double& theta,const mesh& m, const rates& rate, const volatility& v,const  payoff& p, const boundaries& bnd_down, const boundaries& bnd_up, const bool& time_S_dependent)
 	{
 		// arguments allow to follow S,t and 
 		double time = m.t_vect[0];

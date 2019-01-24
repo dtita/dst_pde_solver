@@ -23,7 +23,7 @@ namespace dauphine
     {
     public:
         boundaries();
-		virtual double get_boundaries(const double& f, const double& time, const double& spot, const rates_const& rate, const mesh& m) const;
+		virtual double get_boundaries(const double& f, const double& time, const double& spot, const rates& rate, const mesh& m) const;
         virtual ~boundaries();
 
     };
@@ -32,14 +32,14 @@ namespace dauphine
     {
     public:
 		explicit bound_up_dirichlet();
-        virtual double get_boundaries(const double& f, const double& time, const double& spot, const rates_const& rate, const mesh& m) const;
+        virtual double get_boundaries(const double& f, const double& time, const double& spot, const rates& rate, const mesh& m) const;
 		virtual ~bound_up_dirichlet(); 
     };
 	class bound_down_dirichlet : public boundaries
 	{
 	public:
 		explicit bound_down_dirichlet();
-		virtual double get_boundaries(const double& f, const double& time, const double& spot, const rates_const& rate, const mesh& m) const;
+		virtual double get_boundaries(const double& f, const double& time, const double& spot, const rates& rate, const mesh& m) const;
 		virtual ~bound_down_dirichlet();
 	};
     
