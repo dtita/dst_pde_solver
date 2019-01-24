@@ -75,11 +75,11 @@ namespace dauphine
 	}
 
 	// Triadiag algo qui fonctionne !
-	std::vector<double> tridiagonal_solver(const std::vector<double>&  a, std::vector<double>  b,const std::vector<double>&  c, std::vector<double>  f,const bound_dirichlet& bnd)
+	std::vector<double> tridiagonal_solver(const std::vector<double>&  a, std::vector<double>  b,const std::vector<double>&  c, std::vector<double>  f)
 	{
 		long n = f.size();
 		std::vector<double> x(n);
-		x[0] = bnd.bound_down(f[0]); //boundary down
+		x[0] =f[0]; //boundary down
 		for (int i = 1; i < n; i++) {
 
 			double m = a[i] / b[i - 1];
@@ -98,7 +98,7 @@ namespace dauphine
 	}
 
     //Compute result price vector
-	std::vector<double> price_today(const double& theta,const mesh& m, const rates_const& rate, const volatility& v,const  payoff& p,const bound_dirichlet& bnd, const bool& time_S_dependent)
+	std::vector<double> price_today(const double& theta,const mesh& m, const rates_const& rate, const volatility& v,const  payoff& p, const boundaries& bnd_down, const boundaries& bnd_up, const bool& time_S_dependent)
 	{
 		// arguments allow to follow S,t and 
 		double time = m.t_vect[0];
@@ -125,8 +125,8 @@ namespace dauphine
 		std::vector<double> f_before(N);
 		
         //Condition aux bords (Test pour un call)
-        d[N - 1] = bnd.bound_up(f_old[N - 1],time,spot,rate,m);
-		d[0] = bnd.bound_down(f_old[0]); //boundary down
+        d[N - 1] = bnd_up.get_boundaries(f_old[N - 1],time,spot,rate,m);
+		d[0] = bnd_down.get_boundaries(f_old[0], time, spot, rate, m); //boundary down
 
 		//return c_1;
 		for (int j = 0; j < nb_step; j++)
@@ -143,18 +143,19 @@ namespace dauphine
 
 			// Creation 2nd membre
 			//d[N - 1] = f_old[N - 1] * exp(-rate.get_rates(arguments)*m.get_mesh_dt());
-            d[N - 1] = bnd.bound_up(f_old[N - 1],time,spot,rate,m);
-            
+            d[N - 1] = bnd_up.get_boundaries(f_old[N - 1],time,spot,rate,m);
+            d[0]=bnd_down.get_boundaries(f_old[N - 1], time, spot, rate, m);
             for (long i = 1; i < N - 1; i++)
 			{
 				d[i] = c_1[i] * f_old[i + 1] + b_1[i] * f_old[i] + a_1[i] * f_old[i - 1];
 
 			}
+
 			if (j == nb_step - 1) { // I keep the value at the before last step, to compute the theta
 				f_before = f_new;
 			}
 			// Now we solve the tridiagonal system
-			f_new = tridiagonal_solver(a, b, c, d,bnd);
+			f_new = tridiagonal_solver(a, b, c, d);
 			f_old = f_new;
 		}
 		f_new[0] = f_before[floor(N / 2)];// to compute the theta, not very academic

@@ -46,11 +46,12 @@ namespace dauphine
         bs_call p;
         
     // Creation boundaries
-        
-        bound_dirichlet bnd;
+		bound_down_dirichlet bnd_down;// corresponds to the condition for the lower spot
+        bound_up_dirichlet bnd_up; // corresponds to the condition for the higher spot
+
 
     //Compute price
-		std::vector<double> result = price_today(theta,m,rate,vol_c,p,bnd,false); // Use true if time-dependent
+		std::vector<double> result = price_today(theta,m,rate,vol_c,p,bnd_down,bnd_up,false); // Use true if rate and vol are time are path-dependent
 		
     // Spot index
         int i = (nb_x - 1) / 2;
