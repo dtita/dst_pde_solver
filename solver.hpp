@@ -11,7 +11,7 @@
 namespace dauphine
 {
     //Creation initial price vector
-    std::vector<double> initial_price_vector(const mesh& m, const bs_call& p);
+    std::vector<double> initial_price_vector(const mesh& m, const payoff& p);
     
     //Coeffs Matrix
     std::vector<double> up_vector(const mesh& m, const rates_const& rate, const volatility& v, const double& time, double spot, const double& theta);
@@ -22,7 +22,7 @@ namespace dauphine
     std::vector<double> tridiagonal_solver(const std::vector<double>&  a, std::vector<double>  b,  const std::vector<double>&  c, std::vector<double>  f, const bound_dirichlet& bnd);
 
     // Result vector
-    std::vector<double> price_today(const double& theta, const mesh& m, const rates_const& rate, const volatility& v, const  bs_call& p, const bound_dirichlet& bnd, const bool& time_S_dependent);
+    std::vector<double> price_today(const double& theta, const mesh& m, const rates_const& rate, const volatility& v, const  payoff& p, const bound_dirichlet& bnd, const bool& time_S_dependent);
 }
 
 #endif
