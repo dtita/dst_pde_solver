@@ -1,3 +1,8 @@
+
+
+
+
+
 #include "rates.hpp"
 #include <cmath>
 #include <limits>
@@ -9,15 +14,31 @@ namespace dauphine
 rates::rates()
 {
 }
+double rates::get_rates(const double& time, const double& spot) const
+
+{
+    return 0.0; //Constant rate (equal to 0.0)
+}
 
 rates::~rates()
 {
 }
 
-//Declare the fonction for the rates
-double rates_const::get_rates(const double& time,const double& spot) const
+rates_const::rates_const(const double& rate)
+    :m_rate(rate)
 {
-    return 0.0; //Constant rate (equal to 0.0)
 }
+
+
+double rates_const::get_rates(const double& time, const double& spot) const
+{
+    return m_rate; 
+}
+
+rates_const::~rates_const()
+{
+}
+
+
 }
 
