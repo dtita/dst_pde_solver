@@ -13,7 +13,7 @@ namespace dauphine
 
 	// ici je compute le vecteur ‡ la maturitÈ pour avoir le prix ‡ matu et pouvoir faire backward, donc c'est juste appliquÈ le payoff pour le spot
 
-	std::vector<double> initial_price_vector(const mesh& m, const bs_call& p) {
+	std::vector<double> initial_price_vector(const mesh& m, const payoff& p) {
 		std::vector<double> result(m.spot_vect.size());
 		for (std::size_t i = 0; i < result.size(); i++) {
 			if (p.get_payoff(m.get_mesh_maturity(),m.spot_vect[i]) == 0) {
@@ -98,12 +98,12 @@ namespace dauphine
 	}
 
     //Compute result price vector
-	std::vector<double> price_today(const double& theta,const mesh& m, const rates_const& rate, const volatility& v,const  bs_call& p,const bound_dirichlet& bnd, const bool& time_S_dependent)
+	std::vector<double> price_today(const double& theta,const mesh& m, const rates_const& rate, const volatility& v,const  payoff& p,const bound_dirichlet& bnd, const bool& time_S_dependent)
 	{
 		// arguments allow to follow S,t and 
 		double time = m.t_vect[0];
 		double spot = m.spot_vect[0];
-        //double vol=v.get_volatility(time,spot);
+    
 		std::vector<double> arguments(2);
 		arguments[0] = m.spot_vect[0];
 		arguments[1] = m.t_vect[0];
