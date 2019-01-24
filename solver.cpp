@@ -79,7 +79,7 @@ namespace dauphine
 	{
 		long n = f.size();
 		std::vector<double> x(n);
-		x[0] =f[0]; //boundary down
+		x[0] =f[0];
 		for (int i = 1; i < n; i++) {
 
 			double m = a[i] / b[i - 1];
@@ -142,9 +142,8 @@ namespace dauphine
 			}
 
 			// Creation 2nd membre
-			//d[N - 1] = f_old[N - 1] * exp(-rate.get_rates(arguments)*m.get_mesh_dt());
             d[N - 1] = bnd_up.get_boundaries(f_old[N - 1],time,spot,rate,m);
-            d[0]=bnd_down.get_boundaries(f_old[N - 1], time, spot, rate, m);
+            d[0]=bnd_down.get_boundaries(f_old[0], time, spot, rate, m);
             for (long i = 1; i < N - 1; i++)
 			{
 				d[i] = c_1[i] * f_old[i + 1] + b_1[i] * f_old[i] + a_1[i] * f_old[i - 1];

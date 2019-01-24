@@ -18,7 +18,7 @@ namespace dauphine
     {
     public:
         //mesh();
-        mesh(double dt, double dx,double maturity, double spot, std::vector<double> spot_boundaries);
+        mesh(double dt, int dx,double maturity, double spot, std::vector<double> spot_boundaries);
         double const get_mesh_dt() const;
         double const get_mesh_maturity() const;
         double const get_mesh_dx() const;
