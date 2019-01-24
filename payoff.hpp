@@ -19,7 +19,7 @@ namespace dauphine
     {
     public:
         explicit bs_call();
-        double get_payoff(const double& time, const double& spot) const;
+        virtual double get_payoff(const double& time, const double& spot) const;
         virtual ~bs_call();
     };
 

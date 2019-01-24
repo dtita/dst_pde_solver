@@ -22,7 +22,7 @@ namespace dauphine
 		double theta = 0.5;
 
         //Nbr of points
-        double nb_x = 1001;
+        int nb_x = 1001;
 		double dt = 1. / 365.;
         //Creation mesh
         

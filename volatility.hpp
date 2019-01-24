@@ -25,7 +25,7 @@ namespace dauphine
     {
     public:
          explicit vol_const(const double& vol);
-         double get_volatility(const double& time, const double& spot) const;
+         virtual double get_volatility(const double& time, const double& spot) const;
          virtual ~vol_const();
     private:
         double m_vol;
