@@ -21,6 +21,7 @@ namespace dauphine
     //Tridiag solver
     std::vector<double> tridiagonal_solver(const std::vector<double>&  a, std::vector<double>  b,  const std::vector<double>&  c, std::vector<double>  f, const bound_dirichlet& bnd);
 
+
     // Result vector
     std::vector<double> price_today(const double& theta, const mesh& m, const rates_const& rate, const volatility& v, const  bs_call& p, const bound_dirichlet& bnd, const bool& time_S_dependent);
 }
