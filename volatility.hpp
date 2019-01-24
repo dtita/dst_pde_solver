@@ -16,6 +16,7 @@ namespace dauphine
     {
         public:
             explicit volatility();
+            virtual double get_volatility(const double& time, const double& spot) const;
             virtual ~volatility();
        
     };
@@ -23,7 +24,11 @@ namespace dauphine
     class vol_const : public volatility
     {
     public:
-        double get_volatility(const double& time, const double& spot) const;
+         explicit vol_const(const double& vol);
+         double get_volatility(const double& time, const double& spot) const;
+         virtual ~vol_const();
+    private:
+        double m_vol;
         
     };
 

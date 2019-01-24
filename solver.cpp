@@ -27,7 +27,7 @@ namespace dauphine
 	}
 
     // Compute coeffs Matrix
-	std::vector<double> diag_vector(const mesh& m, const rates_const& rate,const vol_const& vol, const double& time, double spot, const double& theta)
+	std::vector<double> diag_vector(const mesh& m, const rates_const& rate,const volatility& v, const double& time, double spot, const double& theta)
 	{
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
@@ -37,13 +37,13 @@ namespace dauphine
 		for (std::size_t i = 1; i < size - 1; ++i)
 		{
 			spot = a[i]; // coeff depends on S if rate or vol depend on S
-			result[i] = 1.0 + theta * m.get_mesh_dt()*((pow(vol.get_volatility(time, spot), 2) / pow(m.d_x, 2)) + rate.get_rates(time,spot));
+			result[i] = 1.0 + theta * m.get_mesh_dt()*((pow(v.get_volatility(time, spot), 2) / pow(m.d_x, 2)) + rate.get_rates(time,spot));
 		}
 		return result;
 	}
 
 
-	std::vector<double> sub_vector(const mesh& m, const rates_const& rate, const vol_const& vol,const double& time, double spot, const double& theta)
+	std::vector<double> sub_vector(const mesh& m, const rates_const& rate, const volatility& v,const double& time, double spot, const double& theta)
 	{
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
@@ -53,13 +53,13 @@ namespace dauphine
 		for (std::size_t i = 1; i < size - 1; ++i)
 		{
 			spot = a[i]; // coeff depends on S if rate or vol depend on S
-			result[i] = -0.5*theta * m.get_mesh_dt()*((pow(vol.get_volatility(time,spot), 2) / pow(m.d_x, 2)) + ((pow(vol.get_volatility(time,spot), 2) - rate.get_rates(time,spot)) / (2.0*m.d_x)));
+			result[i] = -0.5*theta * m.get_mesh_dt()*((pow(v.get_volatility(time,spot), 2) / pow(m.d_x, 2)) + ((pow(v.get_volatility(time,spot), 2) - rate.get_rates(time,spot)) / (2.0*m.d_x)));
 		}
 		return result;
 	}
 
 
-	std::vector<double> up_vector(const mesh& m, const rates_const& rate, const vol_const& vol, const double& time, double spot, const double& theta)
+	std::vector<double> up_vector(const mesh& m, const rates_const& rate, const volatility& v, const double& time, double spot, const double& theta)
 	{
 		std::vector<double> a = m.spot_vect;
 		long size = a.size();
@@ -69,7 +69,7 @@ namespace dauphine
 		for (std::size_t i = 1; i < size - 1; ++i)
 		{
 			spot= a[i]; // coeff depends on S if rate or vol depend on S
-			result[i] = 0.5*theta * m.get_mesh_dt()*((-pow(vol.get_volatility(time,spot), 2) / pow(m.d_x, 2)) + ((pow(vol.get_volatility(time,spot), 2) - rate.get_rates(time,spot)) / (2.0*m.d_x)));
+			result[i] = 0.5*theta * m.get_mesh_dt()*((-pow(v.get_volatility(time,spot), 2) / pow(m.d_x, 2)) + ((pow(v.get_volatility(time,spot), 2) - rate.get_rates(time,spot)) / (2.0*m.d_x)));
 		}
 		return result;
 	}
@@ -98,11 +98,12 @@ namespace dauphine
 	}
 
     //Compute result price vector
-	std::vector<double> price_today(const double& theta,const mesh& m, const rates_const& rate, const vol_const& vol,const  bs_call& p,const bound_dirichlet& bnd, const bool& time_S_dependent)
+	std::vector<double> price_today(const double& theta,const mesh& m, const rates_const& rate, const volatility& v,const  bs_call& p,const bound_dirichlet& bnd, const bool& time_S_dependent)
 	{
 		// arguments allow to follow S,t and 
 		double time = m.t_vect[0];
 		double spot = m.spot_vect[0];
+        //double vol=v.get_volatility(time,spot);
 		std::vector<double> arguments(2);
 		arguments[0] = m.spot_vect[0];
 		arguments[1] = m.t_vect[0];
@@ -115,12 +116,12 @@ namespace dauphine
 		int nb_step = floor(m.get_mesh_maturity()/ dt);
 
 		//Coeffs de la Matrice
-		std::vector<double> a_1 = sub_vector(m, rate, vol, time,spot,theta-1); //a(theta-1)
-		std::vector<double> b_1 = diag_vector(m, rate, vol, time,spot, theta - 1); //b(theta-1)
-		std::vector<double> c_1 = up_vector(m, rate, vol, time,spot, theta - 1); //c(theta-1)
-		std::vector<double> a = sub_vector(m, rate, vol, time,spot,theta); //a(theta)
-		std::vector<double> b = diag_vector(m, rate, vol, time,spot,theta); //b(theta)
-		std::vector<double> c = up_vector(m, rate, vol, time,spot,theta); //c(theta)
+		std::vector<double> a_1 = sub_vector(m, rate, v, time,spot,theta-1); //a(theta-1)
+		std::vector<double> b_1 = diag_vector(m, rate, v, time,spot, theta - 1); //b(theta-1)
+		std::vector<double> c_1 = up_vector(m, rate, v, time,spot, theta - 1); //c(theta-1)
+		std::vector<double> a = sub_vector(m, rate, v, time,spot,theta); //a(theta)
+		std::vector<double> b = diag_vector(m, rate, v, time,spot,theta); //b(theta)
+		std::vector<double> c = up_vector(m, rate, v, time,spot,theta); //c(theta)
 		std::vector<double> f_before(N);
 		
         //Condition aux bords (Test pour un call)
@@ -131,13 +132,13 @@ namespace dauphine
 		for (int j = 0; j < nb_step; j++)
 		{	
 			if (time_S_dependent) {
-				std::vector<double> a_1 = sub_vector(m, rate, vol, time, spot, theta - 1); //a(theta-1)
-				std::vector<double> b_1 = diag_vector(m, rate, vol, time, spot, theta - 1); //b(theta-1)
-				std::vector<double> c_1 = up_vector(m, rate, vol, time, spot, theta - 1); //c(theta-1)
+				std::vector<double> a_1 = sub_vector(m, rate, v, time, spot, theta - 1); //a(theta-1)
+				std::vector<double> b_1 = diag_vector(m, rate, v, time, spot, theta - 1); //b(theta-1)
+				std::vector<double> c_1 = up_vector(m, rate, v, time, spot, theta - 1); //c(theta-1)
 				arguments[1] = m.t_vect[j]; //on modifie le temps pour changer les calculs de rate et vol si besoin
-				std::vector<double> a = sub_vector(m, rate, vol, time, spot, theta); //a(theta)
-				std::vector<double> b = diag_vector(m, rate, vol, time, spot, theta); //b(theta)
-				std::vector<double> c = up_vector(m, rate, vol, time, spot, theta); //c(theta)
+				std::vector<double> a = sub_vector(m, rate, v, time, spot, theta); //a(theta)
+				std::vector<double> b = diag_vector(m, rate, v, time, spot, theta); //b(theta)
+				std::vector<double> c = up_vector(m, rate, v, time, spot, theta); //c(theta)
 			}
 
 			// Creation 2nd membre

@@ -37,7 +37,7 @@ namespace dauphine
         
     
     //Creation vol
-        vol_const vol;
+        vol_const vol_c(0.20);
         
 	//Creation rates
         rates_const rate;
@@ -50,7 +50,7 @@ namespace dauphine
         bound_dirichlet bnd;
 
     //Compute price
-		std::vector<double> result = price_today(theta,m,rate,vol,p,bnd,false); // Use true if time-dependent
+		std::vector<double> result = price_today(theta,m,rate,vol_c,p,bnd,false); // Use true if time-dependent
 		
     // Spot index
         int i = (nb_x - 1) / 2;
