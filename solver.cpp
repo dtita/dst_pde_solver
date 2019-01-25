@@ -13,14 +13,14 @@ namespace dauphine
 
 	// ici je compute le vecteur ‡ la maturitÈ pour avoir le prix ‡ matu et pouvoir faire backward, donc c'est juste appliquÈ le payoff pour le spot
 
-	std::vector<double> initial_price_vector(const mesh& m, const payoff& p) {
+	std::vector<double> initial_price_vector(const mesh& m, const payoff& p, const rates& rate) {
 		std::vector<double> result(m.spot_vect.size());
 		for (std::size_t i = 0; i < result.size(); i++) {
-			if (p.get_payoff(m.get_mesh_maturity(),m.spot_vect[i]) == 0) {
+			if (p.get_payoff(m.spot_vect[i]*exp(rate.get_rates(0, m.spot_vect[i])*m.get_mesh_maturity())) == 0) {
 				result[i] = 0;
 			}
 			else {
-				result[i] = p.get_payoff(m.get_mesh_maturity(), m.spot_vect[i]);
+				result[i] = p.get_payoff(m.spot_vect[i] * exp(rate.get_rates(0, m.spot_vect[i])*m.get_mesh_maturity()));// on applique le payoff au fwd du spot
 			}
 		}
 		return result;
@@ -108,7 +108,7 @@ namespace dauphine
 		arguments[0] = m.spot_vect[0];
 		arguments[1] = m.t_vect[0];
 
-		std::vector<double> f_old = initial_price_vector(m, p);
+		std::vector<double> f_old = initial_price_vector(m, p,rate);
 		long N = f_old.size();
 		std::vector<double> d(N, 0.0);
 		std::vector<double> f_new(N, 0.0);
@@ -157,7 +157,8 @@ namespace dauphine
 			f_new = tridiagonal_solver(a, b, c, d);
 			f_old = f_new;
 		}
-		f_new[0] = f_before[floor(N / 2)];// to compute the theta, not very academic
+		f_new[0] = f_before[floor(N / 2)];// to keep to compute the theta, not very academic
+
 		return f_new;
 	}
 }

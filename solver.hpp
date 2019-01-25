@@ -11,7 +11,7 @@
 namespace dauphine
 {
     //Creation initial price vector
-    std::vector<double> initial_price_vector(const mesh& m, const payoff& p);
+    std::vector<double> initial_price_vector(const mesh& m, const payoff& p, const rates& rate);
     
     //Coeffs Matrix
     std::vector<double> up_vector(const mesh& m, const rates& rate, const volatility& vol, const double& time, double spot, const double& theta);

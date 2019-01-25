@@ -2,6 +2,8 @@
 #define payoff_hpp
 
 #include <vector>
+#include "rates.hpp"
+
 
 
 namespace dauphine
@@ -10,7 +12,7 @@ namespace dauphine
     {
         public:
             explicit payoff();
-            virtual double get_payoff(const double& time, const double& spot) const;
+            virtual double get_payoff(const double& fwd) const;
             virtual ~payoff();
        
     };
@@ -19,7 +21,7 @@ namespace dauphine
     {
     public:
         explicit bs_call(const double& strike);
-        virtual double get_payoff(const double& time, const double& spot) const;
+        virtual double get_payoff(const double& fwd) const;
         virtual ~bs_call();
     private:
         double m_strike;
