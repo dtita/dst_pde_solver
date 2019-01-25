@@ -18,9 +18,11 @@ namespace dauphine
     class bs_call: public payoff
     {
     public:
-        explicit bs_call();
+        explicit bs_call(const double& strike);
         virtual double get_payoff(const double& time, const double& spot) const;
         virtual ~bs_call();
+    private:
+        double m_strike;
     };
 
 }
