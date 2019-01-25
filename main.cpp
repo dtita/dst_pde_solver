@@ -41,10 +41,12 @@ namespace dauphine
         vol_const vol_c(vol);
         
 	//Creation rates
-        rates_const rate(0.0);
+        double r=0.0;
+        rates_const rate(r);
 
 	//Creation payoff
-        bs_call p;
+        double strike=110.;
+        bs_call p(strike); //Strike equal 100 here
         
     // Creation boundaries
 		bound_down_dirichlet bnd_down;// corresponds to the condition for the lower spot
@@ -65,7 +67,7 @@ namespace dauphine
 		// for the vega, we should have a discretization with respect to the volatility
         
     //Print results (Price and Greeks)
-		std::cout << "Price BS: " << dauphine::bs_price(spot, 100, vol, maturity, true) << std::endl;
+		std::cout << "Price BS: " << dauphine::bs_price(spot, strike, vol, maturity, true) << std::endl;
 		std::cout << "Price: " <<price << std::endl;
 		std::cout << "Delta: " << delta << std::endl;
 		std::cout << "Gamma: " << gamma << std::endl;
