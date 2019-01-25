@@ -37,7 +37,8 @@ namespace dauphine
         
     
     //Creation vol
-        vol_const vol_c(0.20);
+		double vol = 0.20;
+        vol_const vol_c(vol);
         
 	//Creation rates
         rates_const rate(0.0);
@@ -64,6 +65,7 @@ namespace dauphine
 		// for the vega, we should have a discretization with respect to the volatility
         
     //Print results (Price and Greeks)
+		std::cout << "Price BS: " << dauphine::bs_price(spot, 100, vol, maturity, true) << std::endl;
 		std::cout << "Price: " <<price << std::endl;
 		std::cout << "Delta: " << delta << std::endl;
 		std::cout << "Gamma: " << gamma << std::endl;
@@ -75,7 +77,6 @@ namespace dauphine
 
 int main(int argc, char* argv[])
 {
-    std::cout <<"Price BS: " << dauphine::bs_price(100,100,0.20,1.0,true) << std::endl;
 	dauphine::test();
     return 0;
 }
