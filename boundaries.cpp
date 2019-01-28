@@ -53,7 +53,8 @@ namespace dauphine
 
     double bound_up_dirichlet::get_boundaries(const double& f, const double& time, const double& spot,const rates& rate,const mesh& m) const
     {
-        return f*exp(-rate.get_rates(time,spot)*m.get_mesh_dt());
+        // Dirichlet means constant value, and you are rollbacking the payoff w.r.t the spot, not the forward.
+        return f;
     }
     
     double bound_down_dirichlet::get_boundaries(const double& f, const double& time, const double& spot, const rates& rate, const mesh& m) const

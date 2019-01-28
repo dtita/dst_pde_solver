@@ -28,6 +28,7 @@ namespace dauphine
         {
             result[i] = std::exp(log_spot_min + i * dlog);
         }
+        // Would be more efficient to directly compute spot_vect
         spot_vect = result;
         d_x = dlog;
         
@@ -35,6 +36,7 @@ namespace dauphine
         {
             result2[i] = maturity-i*dt;
         }
+        // Would be more efficient to directly compute t_vect
         t_vect = result2;
     }
     mesh::~mesh()

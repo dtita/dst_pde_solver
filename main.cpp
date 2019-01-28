@@ -27,7 +27,7 @@ namespace dauphine
         //Creation mesh
             
     //Creation vol
-		double vol = 0.00;
+		double vol = 0.20;
         vol_const vol_c(vol);
         
 	//Creation rates
@@ -59,13 +59,22 @@ namespace dauphine
         
     //Greeks
 		double price = result[i];
+        // It would be more accurate to compute the mean of the derivatives on the right and on the left
 		double delta = (result[i] - result[i-1]) / (m.spot_vect[i] - m.spot_vect[i-1]);
 		double gamma = (result[i + 1] - 2 * result[i] + result[i - 1]) / (pow((m.spot_vect[i+1] - m.spot_vect[i-1])/2.0, 2));
 		double theta_product = (result[0]-price);
 		// for the vega, we should have a discretization with respect to the volatility
+        // The tradition computation for the vega is done as following:
+        // dvol = 0.01 * vol_c;
+        // price_vol_up = price_today(theta,m,rate,vol_c + vol_c,p,bnd_down,bnd_up,false);
+        // price_vol_down = price_today(theta,m,rate,vol_c - vol_c,p,bnd_down,bnd_up,false);
+        // vega = (price_vol_up - price_vol_down) / (2 * dvol);
         
     //Print results (Price and Greeks)
-		std::cout << "Price BS: " << dauphine::bs_price(spot*exp(r*maturity), strike, vol, maturity, true) << std::endl;
+        // bs_price is the black formula, it has to be discounted; that was not specified in the documentation so
+        // this is not considered as a mistake)
+        // Prefer std::exp (C++ version) over exp (C version) 
+		std::cout << "Price BS: " << std::exp(-r * maturity) * dauphine::bs_price(spot*std::exp(r*maturity), strike, vol, maturity, true) << std::endl;
 		std::cout << "Price: " <<price << std::endl;
 		std::cout << "Delta: " << delta << std::endl;
 		std::cout << "Gamma: " << gamma << std::endl;
