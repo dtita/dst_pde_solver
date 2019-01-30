@@ -23,9 +23,11 @@ namespace dauphine
     {
     public:
         boundaries();
+        // Should be virtual pure.
 		virtual double get_boundaries(const double& f, const double& time, const double& spot, const rates& rate, const mesh& m) const;
         virtual ~boundaries();
 
+        // Missing entity semantic: explicitly delete copy and move semantic
     };
     
     class bound_up_dirichlet : public boundaries

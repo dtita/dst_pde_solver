@@ -15,9 +15,13 @@ namespace dauphine
     class volatility
     {
         public:
+            // No need for explicit since the constructor does not accept any parameter
             explicit volatility();
+            // Should be pure virtual method
             virtual double get_volatility(const double& time, const double& spot) const;
             virtual ~volatility();
+
+            // Missing entity semantic: explicitly delete copy and move semantic
        
     };
     

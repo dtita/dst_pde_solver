@@ -14,6 +14,7 @@ namespace dauphine
     std::vector<double> initial_price_vector(const mesh& m, const payoff& p, const rates& rate);
     
     //Coeffs Matrix
+    // WHy taking time and theta by const reference instead of value, like spot?
     std::vector<double> up_vector(const mesh& m, const rates& rate, const volatility& vol, const double& time, double spot, const double& theta);
     std::vector<double> sub_vector(const mesh& m, const rates& rate, const volatility& vol, const double& time, double spot, const double& theta);
 	std::vector<double> diag_vector(const mesh& m, const rates& rate, const volatility& vol, const double& time, double spot, const double& theta);
